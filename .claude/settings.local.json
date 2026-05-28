@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\Freelance\\\\upwork\\\\michal\\\\frontend\\\\admo-video-studio\\\\admo-video-studio\\\\app\\\\api\\\\chat\")",
+      "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\Freelance\\\\upwork\\\\michal\\\\frontend\\\\admo-video-studio\\\\admo-video-studio\\\\app\\\\api\\\\generate-script\")"
+    ]
+  }
+}
