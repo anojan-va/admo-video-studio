@@ -62,10 +62,8 @@ const CAMPAIGNS: Campaign[] = [
 ]
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
-function statusStyle(s: CampaignStatus): { bg: string; color: string; border: string } {
-  if (s === 'Exported')  return { bg: 'rgba(0,77,64,0.09)',    color: PRIMARY,     border: 'rgba(0,77,64,0.22)' }
-  if (s === 'In Review') return { bg: 'rgba(197,160,89,0.13)', color: '#7A5518',   border: 'rgba(197,160,89,0.35)' }
-  return                        { bg: 'rgba(26,26,26,0.05)',   color: T2,          border: BORDER }
+function statusStyle(_s: CampaignStatus): { bg: string; color: string; border: string } {
+  return { bg: '#E5E5E5', color: '#2D2D2D', border: 'none' }
 }
 
 const ar = (p: string) => (p === 'Instagram' || p === 'TikTok') ? '9:16' : '16:9'
@@ -97,7 +95,7 @@ function CampaignCard({ c, onClick }: { c: Campaign; onClick: () => void }) {
         <div style={{
           position: 'absolute', top: 10, left: 10,
           padding: '2px 9px', borderRadius: 20, fontSize: 10, fontWeight: 500,
-          background: 'rgba(0,77,64,0.09)', color: PRIMARY, border: `1px solid rgba(0,77,64,0.20)`,
+          background: '#C8923A', color: '#FFFFFF', border: 'none',
         }}>
           {c.theme}
         </div>
@@ -181,16 +179,16 @@ export default function CampaignsPage() {
     }}>
       {/* Nav */}
       <header style={{
-        height: 56, background: S1, borderBottom: `1px solid ${BORDER}`,
+        height: 56, background: '#B22234', borderBottom: `1px solid ${BORDER}`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 24px', position: 'sticky', top: 0, zIndex: 10,
       }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'Georgia, serif', fontSize: 15, fontWeight: 400, color: PRIMARY, letterSpacing: '0.07em' }}>
+          <span style={{ fontFamily: 'Georgia, serif', fontSize: 15, fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.07em' }}>
             ADMO
           </span>
-          <span style={{ color: BORDER, fontSize: 13 }}>|</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: T1 }}>Video Studio</span>
+          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>|</span>
+          <span style={{ fontSize: 13, fontWeight: 500, color: '#FFFFFF' }}>Video Studio</span>
         </div>
 
         <div style={{ display: 'flex', gap: 4 }}>
@@ -198,7 +196,7 @@ export default function CampaignsPage() {
             onClick={() => router.push('/')}
             style={{
               padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-              background: 'transparent', color: T2, border: '1px solid transparent',
+              background: 'transparent', color: 'rgba(255,255,255,0.75)', border: '1px solid transparent',
               cursor: 'pointer', transition: 'color 0.3s',
             }}
           >
@@ -206,7 +204,7 @@ export default function CampaignsPage() {
           </button>
           <button style={{
             padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: S1, color: T1, border: `1px solid ${BORDER}`, cursor: 'pointer',
+            background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.35)', cursor: 'pointer',
           }}>
             My Campaigns
           </button>
@@ -253,12 +251,12 @@ export default function CampaignsPage() {
             </div>
 
             {/* New campaign CTA */}
-            <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center' }}>
+            <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => router.push('/')}
                 style={{
                   padding: '10px 24px', borderRadius: 6, fontSize: 13, fontWeight: 500,
-                  background: GOLD, color: T1, border: 'none', cursor: 'pointer',
+                  background: '#B22234', color: '#FFFFFF', border: 'none', cursor: 'pointer',
                   transition: 'opacity 0.3s',
                 }}
               >
