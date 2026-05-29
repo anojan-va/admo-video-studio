@@ -31,8 +31,9 @@ When writing or updating visual prompts, follow ALL rules below — short one-li
 - Specify exact camera work: drone shot, tracking shot, close-up, wide establishing shot, handheld documentary style.
 - Specify lighting in detail: golden hour, soft morning light, dramatic dusk, bright midday.
 - Specify colour grade and mood: warm amber tones, cool professional blue, rich vibrant warmth.
-- Always 9:16 vertical framing.
-- End every prompt with: "Photorealistic, cinematic quality, ultra-detailed, 15-second video clip."
+- Always 9:16 vertical framing, portrait orientation.
+- CRITICAL: All people must be fully upright — never sideways or rotated. If walking, they walk towards or away from camera, not horizontally across. Include "portrait orientation, subjects fully upright" in every prompt.
+- End every prompt with: "Portrait orientation, subjects fully upright, vertical 9:16 frame. Photorealistic, cinematic quality, ultra-detailed, 15-second video clip."
 
 Respond ONLY with valid JSON in this exact format:
 {
