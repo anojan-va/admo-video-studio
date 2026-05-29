@@ -1,9 +1,8 @@
 import OpenAI from 'openai'
 import { NextRequest } from 'next/server'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 export async function POST(req: NextRequest) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const { messages, brief } = await req.json()
 
   const systemPrompt = `You are an AI creative partner for ADMO Video Studio, helping users create video campaigns about Abu Dhabi.

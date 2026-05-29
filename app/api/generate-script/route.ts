@@ -1,9 +1,8 @@
 import OpenAI from 'openai'
 import { NextRequest } from 'next/server'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 export async function POST(req: NextRequest) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const { brief } = await req.json()
 
   const durationSecs = brief.duration === '15s' ? 15 : brief.duration === '30s' ? 30 : 60

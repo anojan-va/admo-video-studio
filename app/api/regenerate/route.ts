@@ -1,9 +1,8 @@
 import OpenAI from 'openai'
 import { NextRequest } from 'next/server'
 
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
-
 export async function POST(req: NextRequest) {
+  const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const { scenes, brief, instruction } = await req.json()
 
   const scenesJson = JSON.stringify(scenes, null, 2)

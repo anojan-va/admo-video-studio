@@ -134,22 +134,22 @@ function TopNav() {
 
   return (
     <header style={{
-      height: 56, background: S1, borderBottom: `1px solid ${BORDER}`,
+      height: 56, background: RED, borderBottom: `1px solid ${RED}`,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 24px', flexShrink: 0,
     }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 15, fontWeight: 400, color: RED, letterSpacing: '0.07em' }}>
+        <span style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 15, fontWeight: 700, color: '#FFFFFF', letterSpacing: '0.07em' }}>
           ADMO
         </span>
-        <span style={{ color: BORDER, fontSize: 13 }}>|</span>
-        <span style={{ fontSize: 13, fontWeight: 500, color: T1 }}>Video Studio</span>
+        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>|</span>
+        <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>Video Studio</span>
       </div>
 
       <div style={{ display: 'flex', gap: 4 }}>
         <button style={{
           padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-          background: S1, color: T1, border: `1px solid ${BORDER}`, cursor: 'pointer',
+          background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)', cursor: 'pointer',
         }}>
           Creation Canvas
         </button>
@@ -157,7 +157,7 @@ function TopNav() {
           onClick={() => router.push('/campaigns')}
           style={{
             padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: 'transparent', color: T2, border: '1px solid transparent',
+            background: 'transparent', color: 'rgba(255,255,255,0.75)', border: '1px solid transparent',
             cursor: 'pointer', transition: 'color 0.3s',
           }}
         >
@@ -166,9 +166,9 @@ function TopNav() {
       </div>
 
       <div style={{
-        width: 30, height: 30, borderRadius: '50%', background: RED,
+        width: 30, height: 30, borderRadius: '50%', background: '#2D2D2D',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontSize: 11, fontWeight: 500, color: '#FFFFFF',
+        fontSize: 11, fontWeight: 700, color: '#FFFFFF',
       }}>
         M
       </div>
@@ -241,12 +241,12 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
   return (
     <aside style={{
       width: '33.333%', flexShrink: 0,
-      background: S1, borderRight: `1px solid ${BORDER}`,
+      background: '#FFFFFF', borderRight: `1px solid ${BORDER}`,
       display: 'flex', flexDirection: 'column',
     }}>
       <div style={{ padding: '14px 20px 12px', borderBottom: `1px solid ${BLIGHT}`, flexShrink: 0 }}>
-        <div style={{ fontSize: 12, fontWeight: 500, color: T1 }}>AI Assistant</div>
-        <div style={{ fontSize: 11, color: T2, marginTop: 2 }}>Describe your campaign — I'll fill in the brief</div>
+        <div style={{ fontSize: 15, fontWeight: 700, color: T1 }}>AI Assistant</div>
+        <div style={{ fontSize: 11, color: T2, marginTop: 4 }}>Use the ADMO AI assistant to complete your brief, or edit the fields directly.</div>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -254,9 +254,10 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
           <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', alignItems: 'flex-start', gap: 8 }}>
             {m.role === 'ai' && (
               <div style={{
-                width: 22, height: 22, borderRadius: '50%', background: RED,
+                width: 22, height: 22, borderRadius: '50%', background: BORDER,
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 7, fontWeight: 500, color: '#FFFFFF', flexShrink: 0, marginTop: 1,
+                fontSize: 7, fontWeight: 700, color: T1, flexShrink: 0, marginTop: 1,
+                border: `1px solid ${BORDER}`,
               }}>
                 AI
               </div>
@@ -264,22 +265,32 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
             <div style={{
               maxWidth: '78%', padding: '9px 13px',
               borderRadius: m.role === 'ai' ? '2px 10px 10px 10px' : '10px 2px 10px 10px',
-              background: m.role === 'ai' ? BG : T1,
-              border: `1px solid ${m.role === 'ai' ? BORDER : 'transparent'}`,
+              background: m.role === 'ai' ? BG : '#DADADA',
+              border: `1px solid ${BORDER}`,
               fontSize: 12, lineHeight: 1.6,
-              color: m.role === 'ai' ? T1 : '#FFFFFF',
+              color: T1,
             }}>
               {m.text}
             </div>
+            {m.role === 'user' && (
+              <div style={{
+                width: 22, height: 22, borderRadius: '50%', background: '#D1CEC9',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                fontSize: 7, fontWeight: 700, color: T1, flexShrink: 0, marginTop: 1,
+              }}>
+                ME
+              </div>
+            )}
           </div>
         ))}
 
         {loading && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <div style={{
-              width: 22, height: 22, borderRadius: '50%', background: RED,
+              width: 22, height: 22, borderRadius: '50%', background: BORDER,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 7, fontWeight: 500, color: '#FFFFFF', flexShrink: 0, marginTop: 1,
+              fontSize: 7, fontWeight: 700, color: T1, flexShrink: 0, marginTop: 1,
+              border: `1px solid ${BORDER}`,
             }}>
               AI
             </div>
@@ -337,12 +348,12 @@ function StageBrief({
   const valid = data.brief.length >= 20 && !!data.theme && !!data.platform && !!data.duration
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+    <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <h1 style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 22, fontWeight: 400, color: T1, marginBottom: 6 }}>
-          Tell the AI what this video is about
+        <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0, marginBottom: 4 }}>
+          Create your video campaign
         </h1>
-        <p style={{ fontSize: 12, color: T2 }}>Chat with the AI on the left to fill in your brief, or edit the fields directly.</p>
+        <p style={{ fontSize: 11, color: T2 }}>Chat with the AI on the left to fill in your brief, or edit the fields directly.</p>
       </div>
 
       <div>
