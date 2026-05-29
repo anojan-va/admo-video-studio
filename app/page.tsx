@@ -10,7 +10,7 @@ const BG     = '#F8F7F4'
 const S1     = '#FFFFFF'
 const S2     = '#F2EFE9'
 const RED    = '#B22234'
-const GREEN  = '#1E7B34'
+const GREEN  = '#C8923A'
 const T1     = '#1A1A1A'
 const T2     = '#5F5E5A'
 const BORDER = '#E8E4DE'
@@ -366,7 +366,7 @@ function StageBrief({
   }
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 36 }}>
+    <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
         <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0 }}>
           Create your video campaign
@@ -462,8 +462,9 @@ function StageScript({
         </h1>
       </div>
 
-      <Card style={{ background: S2 }}>
+      <div>
         <FieldLabel>Full Voiceover</FieldLabel>
+        <Card style={{ background: S2 }}>
         {generating ? (
           <div style={{ padding: '24px 0', fontSize: 12, color: T2, fontStyle: 'italic' }}>
             Generating script…
@@ -479,6 +480,7 @@ function StageScript({
           ))}
         </div>
       </Card>
+      </div>
 
       {!generating && scenes.length > 0 && (
         <div>
@@ -487,7 +489,7 @@ function StageScript({
             {scenes.map((scene, i) => (
               <div key={i} style={{ background: S2, border: `1px solid ${BORDER}`, borderRadius: 8, padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'center' }}>
                 <div style={{
-                  width: 28, height: 28, borderRadius: 6, background: '#E8DDD0', border: `1px solid ${BORDER}`,
+                  width: 28, height: 28, borderRadius: 6, background: S2, border: `1px solid ${BORDER}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
                   fontSize: 11, fontWeight: 500, color: '#2D2D2D', flexShrink: 0,
                 }}>
@@ -515,7 +517,7 @@ function StageScript({
             opacity: generating ? 0.5 : 1,
           }}
         >
-          {generating ? 'Regenerating…' : 'Regenerate'}
+          {generating ? 'Regenerating…' : '↺ Regenerate'}
         </button>
         <ActionBtn onClick={next} disabled={generating || scenes.length === 0}>
           Confirm & render →
@@ -623,14 +625,11 @@ function StageRendering({
         <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0, marginBottom: 6 }}>
           {done ? 'Videos generated' : 'Generating your videos'}
         </h1>
-        <p style={{ fontSize: 12, color: T2 }}>
-          {done ? 'Moving to review in a moment…' : 'We are generating your videos. This may take a few minutes.'}
-        </p>
       </div>
 
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>Overall Progress</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>We are generating your videos. This may take a few minutes.</span>
           <span style={{ fontSize: 12, fontWeight: 500, color: done ? GREEN : '#C8923A' }}>{Math.round(pct)}%</span>
         </div>
         <div style={{ height: 5, background: S2, borderRadius: 3, overflow: 'hidden' }}>
@@ -694,11 +693,12 @@ function StageRendering({
 // Stage 4 — Approve  (single final video review)
 // ─────────────────────────────────────────────────────────────────────────────
 function StageApprove({
-  brief, videoUrls, scenes, next, onRegenerate,
+  brief, videoUrls, scenes, script, next, onRegenerate,
 }: {
   brief: Brief
   videoUrls: string[]
   scenes: Scene[]
+  script: string
   next: () => void
   onRegenerate: (updatedScenes: Scene[]) => void
 }) {
@@ -781,30 +781,37 @@ function StageApprove({
         {/* Right panel: metadata + approve */}
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
 
-          <Card>
+          <div>
             <FieldLabel>Campaign Details</FieldLabel>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 8 }}>
-              {[brief.theme, brief.platform, brief.duration, ar(brief.platform)].filter(Boolean).map((tag, i) => (
-                <Badge key={i} text={tag} variant="amber" />
-              ))}
-            </div>
-          </Card>
+            <Card style={{ background: S2 }}>
+              <p style={{ fontSize: 12, lineHeight: 1.6, color: T1, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+                {script}
+              </p>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16 }}>
+                {[brief.theme, brief.platform, brief.duration, ar(brief.platform)].filter(Boolean).map((tag, i) => (
+                  <Badge key={i} text={tag} variant="amber" />
+                ))}
+              </div>
+            </Card>
+          </div>
 
-          <Card style={{ background: '#E8DDD0' }}>
+          <div>
             <FieldLabel>Output</FieldLabel>
-            <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {[
-                { label: 'Format',     value: 'MP4' },
-                { label: 'Aspect',     value: ar(brief.platform) || '9:16' },
-                { label: 'Audio',      value: 'Voiceover included' },
-              ].map(({ label, value }) => (
-                <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-                  <span style={{ color: T2 }}>{label}</span>
-                  <span style={{ color: T1, fontWeight: 500 }}>{value}</span>
-                </div>
-              ))}
-            </div>
-          </Card>
+            <Card style={{ background: S2 }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {[
+                  { label: 'Format',     value: 'MP4' },
+                  { label: 'Aspect',     value: ar(brief.platform) || '9:16' },
+                  { label: 'Audio',      value: 'Voiceover included' },
+                ].map(({ label, value }) => (
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
+                    <span style={{ color: T1 }}>{label}</span>
+                    <span style={{ color: T1, fontWeight: 500 }}>{value}</span>
+                  </div>
+                ))}
+              </div>
+            </Card>
+          </div>
 
         </div>
       </div>
@@ -949,92 +956,94 @@ function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sc
   }
 
   return (
-    <div style={{ height: '100%', overflowY: 'auto', padding: '32px 36px', display: 'flex', flexDirection: 'column', gap: 20 }}>
-      <div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 5 }}>
-          <h1 style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 22, fontWeight: 400, color: T1 }}>
-            Abu Dhabi Campaign
-          </h1>
-          <Badge text="Exported" variant="success" />
-        </div>
-        <p style={{ fontSize: 12, color: T2 }}>{sceneCount} scenes approved and ready for distribution.</p>
+    <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Social Media Video Campaign</div>
+        <Badge text="Exported" variant="success" />
       </div>
 
-      {finalUrl && (
-        <Card>
-          <FieldLabel>Video Preview</FieldLabel>
-          <video
-            src={finalUrl}
-            controls
-            playsInline
-            style={{
-              width: '100%', marginTop: 10, borderRadius: 6,
-              background: '#000', display: 'block',
-            }}
-          />
-        </Card>
-      )}
+      <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flex: 1 }}>
 
-      <Card style={{ background: '#E8DDD0' }}>
-        <FieldLabel>Shareable Review Link</FieldLabel>
-        <div style={{ display: 'flex', gap: 10, alignItems: 'center', marginTop: 6 }}>
-          <div style={{
-            flex: 1, background: S2, border: `1px solid ${BLIGHT}`,
-            borderRadius: 6, padding: '9px 12px', fontSize: 12, color: T2,
-            fontFamily: '"Roboto Mono", "Courier New", monospace',
-          }}>
-            {reviewUrl}
-          </div>
-          <button onClick={copy} style={{
-            padding: '9px 16px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-            background: copied ? 'rgba(30,123,52,0.09)' : S1,
-            color: copied ? GREEN : T1,
-            border: `1px solid ${copied ? 'rgba(30,123,52,0.28)' : BORDER}`,
-            cursor: 'pointer', transition: 'all 0.3s', whiteSpace: 'nowrap',
-          }}>
-            {copied ? '✓ Copied' : 'Copy link'}
-          </button>
-        </div>
-        <div style={{ fontSize: 10, color: T2, marginTop: 7 }}>Expires in 30 days · Password protected</div>
-      </Card>
-
-      <Card style={{ background: '#E8DDD0' }}>
-        <FieldLabel>Campaign Summary</FieldLabel>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 10 }}>
-          <div style={{
-            width: 56, height: 38, background: S2, borderRadius: 6,
-            border: `1px solid ${BLIGHT}`, display: 'flex', alignItems: 'center',
-            justifyContent: 'center', flexShrink: 0,
-          }}>
-            <span style={{ fontSize: 14, opacity: 0.25 }}>▶</span>
-          </div>
-
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ fontSize: 12, fontWeight: 500, color: T1, marginBottom: 2 }}>Abu Dhabi Campaign</div>
-            <div style={{ fontSize: 11, color: T2 }}>
-              {brief.platform || 'Instagram'} · {brief.duration || '30s'} · {ar(brief.platform || 'Instagram')}
+        <div style={{
+          flexShrink: 0, width: 280,
+          background: '#000', borderRadius: 12, overflow: 'hidden',
+          border: `1px solid ${BORDER}`,
+          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+        }}>
+          {finalUrl ? (
+            <video
+              src={finalUrl}
+              controls
+              autoPlay={false}
+              style={{ width: '100%', display: 'block' }}
+            />
+          ) : (
+            <div style={{
+              aspectRatio: '9/16', display: 'flex', flexDirection: 'column',
+              alignItems: 'center', justifyContent: 'center', gap: 10,
+              background: S2,
+            }}>
+              <span style={{ fontSize: 28, opacity: 0.25 }}>▶</span>
+              <span style={{ fontSize: 11, color: T2 }}>No video available</span>
             </div>
+          )}
+        </div>
+
+        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
+
+          <div>
+            <FieldLabel>Campaign Summary</FieldLabel>
+            <Card style={{ background: S2 }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div style={{ flex: 1, textAlign: 'center' }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: T1 }}>{brief.platform || 'Instagram'}</div>
+                  <div style={{ fontSize: 10, color: T2, marginTop: 1 }}>Platform</div>
+                </div>
+                {[
+                  { k: 'Scenes',     v: String(sceneCount) },
+                  { k: 'Duration',   v: brief.duration  || '30s' },
+                  { k: 'Resolution', v: '1080p' },
+                ].map(({ k, v }) => (
+                  <div key={k} style={{ flex: 1, textAlign: 'center' }}>
+                    <div style={{ fontSize: 13, fontWeight: 500, color: T1 }}>{v}</div>
+                    <div style={{ fontSize: 10, color: T2, marginTop: 1 }}>{k}</div>
+                  </div>
+                ))}
+              </div>
+            </Card>
           </div>
 
-          {[
-            { k: 'Scenes',     v: String(sceneCount) },
-            { k: 'Duration',   v: brief.duration  || '30s' },
-            { k: 'Resolution', v: '1080p' },
-          ].map(({ k, v }) => (
-            <div key={k} style={{ textAlign: 'center', flexShrink: 0 }}>
-              <div style={{ fontSize: 13, fontWeight: 500, color: T1 }}>{v}</div>
-              <div style={{ fontSize: 10, color: T2, marginTop: 1 }}>{k}</div>
-            </div>
-          ))}
+          <div>
+            <FieldLabel>Shareable Review Link</FieldLabel>
+            <Card style={{ background: S2 }}>
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+                <div style={{
+                  flex: 1, background: S1, border: `1px solid ${BLIGHT}`,
+                  borderRadius: 6, padding: '9px 12px', fontSize: 12, color: T2,
+                  fontFamily: '"Roboto Mono", "Courier New", monospace',
+                }}>
+                  {reviewUrl}
+                </div>
+                <button onClick={copy} style={{
+                  padding: '9px 16px', borderRadius: 6, fontSize: 11, fontWeight: 500,
+                  background: '#C8923A', color: '#FFFFFF', border: `1px solid #C8923A`,
+                  cursor: 'pointer', transition: 'all 0.3s', whiteSpace: 'nowrap',
+                }}>
+                  {copied ? '✓ Copied' : 'Copy link'}
+                </button>
+              </div>
+              <div style={{ fontSize: 10, color: T2, marginTop: 7 }}>Expires in 30 days · Password protected</div>
+            </Card>
+          </div>
 
-          <Badge text="Exported" variant="success" />
         </div>
-      </Card>
+      </div>
 
       <div style={{ height: 1, background: BLIGHT }} />
 
-      <div style={{ display: 'flex', justifyContent: 'center', paddingBottom: 12 }}>
-        <ActionBtn onClick={reset} variant="ghost">+ New campaign</ActionBtn>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 12 }}>
+        <ActionBtn onClick={reset}>+ New campaign</ActionBtn>
       </div>
     </div>
   )
@@ -1173,7 +1182,7 @@ export default function Page() {
           {stage === 1 && <StageBrief data={brief} set={setBrief} onGenerate={handleGenerateAndAdvance} generating={generatingScript} />}
           {stage === 2 && <StageScript brief={brief} script={script} scenes={scenes} next={() => { go(3); triggerRender(scenes) }} onRegenerate={generateScript} generating={generatingScript} />}
           {stage === 3 && <StageRendering executionId={renderExecId} triggerError={renderTriggerErr} onComplete={handleRenderComplete} next={() => go(4)} onRetry={() => triggerRender(scenes)} />}
-          {stage === 4 && <StageApprove brief={brief} videoUrls={videoUrls} scenes={scenes} next={() => go(5)} onRegenerate={updated => { setScenes(updated); setVideoUrls([]); go(3); triggerRender(updated) }} />}
+          {stage === 4 && <StageApprove brief={brief} videoUrls={videoUrls} scenes={scenes} script={script} next={() => go(5)} onRegenerate={updated => { setScenes(updated); setVideoUrls([]); go(3); triggerRender(updated) }} />}
           {stage === 5 && <StageExport brief={brief} sceneCount={scenes.length || 6} videoUrls={videoUrls} reset={reset} />}
         </main>
       </div>
