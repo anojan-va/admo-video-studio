@@ -79,10 +79,9 @@ export async function POST(req: NextRequest) {
     // AbortError is expected — the workflow is long-running and still going in n8n.
   }
 
-  // Poll the n8n executions API until a new execution appears.
-  // n8n records executions as soon as they start, so this usually resolves in seconds.
-  // 2-minute window covers slow Railway cold starts.
-  const deadline = Date.now() + 120000
+  // n8n only surfaces an execution in its API after it FINISHES (not when it starts).
+  // 30-sec videos take ~3 min, so poll for up to 5 min to cover all durations.
+  const deadline = Date.now() + 300000
   let newExecId: string | null = null
 
   while (Date.now() < deadline) {

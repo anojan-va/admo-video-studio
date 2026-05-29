@@ -494,7 +494,7 @@ function StageScript({
                   {i + 1}
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: T2, marginBottom: 5 }}>Scene {i + 1} · ~5s</div>
+                  <div style={{ fontSize: 11, color: T2, marginBottom: 5 }}>Scene {i + 1}</div>
                   <p style={{ fontSize: 12, color: T1, lineHeight: 1.65 }}>{scene.vo}</p>
                 </div>
               </div>
