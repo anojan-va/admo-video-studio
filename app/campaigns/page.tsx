@@ -251,7 +251,7 @@ export default function CampaignsPage() {
             </div>
 
             {/* New campaign CTA */}
-            <div style={{ marginTop: 40, display: 'flex', justifyContent: 'center' }}>
+            <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
               <button
                 onClick={() => router.push('/')}
                 style={{

@@ -813,21 +813,21 @@ function StageApprove({
             </Card>
           </div>
 
-        </div>
-      </div>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 4 }}>
+            <button
+              onClick={() => setShowRegen(v => !v)}
+              style={{
+                padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+                background: '#FFFFFF', color: RED, border: `1px solid ${RED}`,
+                cursor: 'pointer', transition: 'all 0.3s', whiteSpace: 'nowrap',
+              }}
+            >
+              {showRegen ? 'Cancel' : '↺ Regenerate'}
+            </button>
+            <ActionBtn onClick={next}>Approve &amp; Export →</ActionBtn>
+          </div>
 
-      <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
-        <button
-          onClick={() => setShowRegen(v => !v)}
-          style={{
-            padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: '#FFFFFF', color: RED, border: `1px solid ${RED}`,
-            cursor: 'pointer', transition: 'all 0.3s', whiteSpace: 'nowrap',
-          }}
-        >
-          {showRegen ? 'Cancel' : '↺ Regenerate'}
-        </button>
-        <ActionBtn onClick={next}>Approve &amp; Export →</ActionBtn>
+        </div>
       </div>
 
       {/* Regenerate panel */}
@@ -960,7 +960,6 @@ function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sc
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
         <div style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Social Media Video Campaign</div>
-        <Badge text="Exported" variant="success" />
       </div>
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flex: 1 }}>
@@ -1037,13 +1036,11 @@ function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sc
             </Card>
           </div>
 
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: 4 }}>
+            <ActionBtn onClick={reset}>+ New campaign</ActionBtn>
+          </div>
+
         </div>
-      </div>
-
-      <div style={{ height: 1, background: BLIGHT }} />
-
-      <div style={{ display: 'flex', justifyContent: 'flex-end', paddingBottom: 12 }}>
-        <ActionBtn onClick={reset}>+ New campaign</ActionBtn>
       </div>
     </div>
   )
