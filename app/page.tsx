@@ -589,7 +589,8 @@ function StageRendering({
   // Animate progress up to 90% while n8n is running, jump to 100% on success
   useEffect(() => {
     if (renderStatus !== 'running') return
-    const id = setInterval(() => setPct(p => p < 90 ? +(p + 0.4).toFixed(1) : 90), 300)
+    // 0.02% per 300ms ≈ 90% over ~22 minutes, matching the max workflow duration
+    const id = setInterval(() => setPct(p => p < 90 ? +(p + 0.02).toFixed(2) : 90), 300)
     return () => clearInterval(id)
   }, [renderStatus])
 
