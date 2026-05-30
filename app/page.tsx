@@ -925,8 +925,8 @@ function StageApprove({
 // Stage 5 — Export  (was stage 6)
 // ─────────────────────────────────────────────────────────────────────────────
 function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sceneCount: number; videoUrls: string[]; reset: () => void }) {
-  const [copied,     setCopied]     = useState(false)
-  const [downloaded, setDownloaded] = useState(false)
+  const [copied,  setCopied]  = useState(false)
+  const [dlState, setDlState] = useState<'idle' | 'downloading' | 'error'>('idle')
   const reviewUrl = 'review.admo.studio/c/abu-dhabi-safety-0527'
 
   const finalUrl = videoUrls.find(u => /\/final\.mp4/i.test(u)) ?? videoUrls[videoUrls.length - 1]
@@ -939,20 +939,21 @@ function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sc
 
   const download = async () => {
     if (!finalUrl) return
-    setDownloaded(true)
+    setDlState('downloading')
     try {
       const res = await fetch(finalUrl)
+      if (!res.ok) throw new Error('fetch failed')
       const blob = await res.blob()
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = 'campaign-video.mp4'
+      a.download = `${brief.platform || 'campaign'}-video.mp4`
       a.click()
       URL.revokeObjectURL(url)
+      setTimeout(() => setDlState('idle'), 2500)
     } catch {
-      window.open(finalUrl, '_blank')
+      setDlState('error')
     }
-    setTimeout(() => setDownloaded(false), 2500)
   }
 
   return (
@@ -1033,6 +1034,45 @@ function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sc
                 </button>
               </div>
               <div style={{ fontSize: 10, color: T2, marginTop: 7 }}>Expires in 30 days · Password protected</div>
+            </Card>
+          </div>
+
+          <div>
+            <FieldLabel>Download Video</FieldLabel>
+            <Card style={{ background: S2 }}>
+              <button
+                onClick={download}
+                disabled={!finalUrl || dlState === 'downloading'}
+                style={{
+                  display: 'flex', alignItems: 'center', gap: 8,
+                  width: '100%', padding: '10px 14px', borderRadius: 6,
+                  fontSize: 12, fontWeight: 500,
+                  background: (!finalUrl || dlState === 'downloading') ? S1 : '#C8923A',
+                  color: (!finalUrl || dlState === 'downloading') ? T2 : '#FFFFFF',
+                  border: `1px solid ${(!finalUrl || dlState === 'downloading') ? BLIGHT : '#C8923A'}`,
+                  cursor: (!finalUrl || dlState === 'downloading') ? 'not-allowed' : 'pointer',
+                  transition: 'all 0.3s',
+                  opacity: (!finalUrl || dlState === 'downloading') ? 0.7 : 1,
+                }}
+              >
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                  <polyline points="7 10 12 15 17 10"/>
+                  <line x1="12" y1="15" x2="12" y2="3"/>
+                </svg>
+                {!finalUrl
+                  ? 'Preparing…'
+                  : dlState === 'downloading'
+                    ? 'Downloading…'
+                    : `${brief.platform || 'Instagram'} ${ar(brief.platform || 'Instagram')}`
+                }
+              </button>
+              {dlState === 'error' && (
+                <div style={{ fontSize: 10, color: RED, marginTop: 7 }}>
+                  Download failed. Please try again.{' '}
+                  <span style={{ color: T2 }}>Contact support if this continues.</span>
+                </div>
+              )}
             </Card>
           </div>
 
