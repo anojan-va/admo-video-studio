@@ -1,5 +1,6 @@
 import OpenAI from 'openai'
 import { NextRequest } from 'next/server'
+import { getSamplePromptsForTheme, type Theme } from '@/lib/samplePrompts'
 
 export async function POST(req: NextRequest) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
@@ -8,6 +9,11 @@ export async function POST(req: NextRequest) {
   const sceneCount = brief.duration === '15s' ? 2 : brief.duration === '30s' ? 3 : 6
   const charMin   = brief.duration === '15s' ? 230 : brief.duration === '30s' ? 420 : 850
   const charMax   = brief.duration === '15s' ? 260 : brief.duration === '30s' ? 450 : 900
+
+  const themeSamples = getSamplePromptsForTheme(brief.theme as Theme)
+  const samplesBlock = themeSamples
+    .map((p, i) => `Sample ${i + 1}: "${p}"`)
+    .join('\n\n')
 
   const prompt = `You are a professional video script writer for ADMO Video Studio, creating compelling campaigns set exclusively in Abu Dhabi, UAE.
 
@@ -34,6 +40,10 @@ Respond ONLY with valid JSON in this exact format:
     }
   ]
 }
+
+REFERENCE SAMPLES — study these approved prompts for the "${brief.theme}" theme and match their style, depth, and structure:
+
+${samplesBlock}
 
 Requirements:
 - Generate exactly ${sceneCount} scenes
