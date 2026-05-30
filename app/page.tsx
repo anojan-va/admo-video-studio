@@ -927,11 +927,11 @@ function StageApprove({
 function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sceneCount: number; videoUrls: string[]; reset: () => void }) {
   const [copied,  setCopied]  = useState(false)
   const [dlState, setDlState] = useState<'idle' | 'downloading' | 'error'>('idle')
-  const reviewUrl = 'review.admo.studio/c/abu-dhabi-safety-0527'
-
   const finalUrl = videoUrls.find(u => /\/final\.mp4/i.test(u)) ?? videoUrls[videoUrls.length - 1]
+  const reviewUrl = finalUrl ?? ''
 
   const copy = () => {
+    if (!reviewUrl) return
     navigator.clipboard.writeText(reviewUrl).catch(() => {})
     setCopied(true)
     setTimeout(() => setCopied(false), 2200)
