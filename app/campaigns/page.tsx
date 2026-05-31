@@ -36,6 +36,7 @@ function formatDate(iso: string | null): string {
   } catch { return '—' }
 }
 
+
 function CampaignCard({ c, onClick }: { c: DbCampaign; onClick: () => void }) {
   const status = mapStatus(c.status)
 
@@ -55,10 +56,32 @@ function CampaignCard({ c, onClick }: { c: DbCampaign; onClick: () => void }) {
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         borderBottom: `1px solid ${BLIGHT}`, overflow: 'hidden',
       }}>
-        {c.final_url
-          ? <video src={c.final_url} style={{ width: '100%', height: '100%', objectFit: 'cover' }} muted preload="none" />
-          : <span style={{ fontSize: 28, opacity: 0.18 }}>▶</span>
-        }
+        {c.final_url ? (
+          <>
+            <video
+              src={c.final_url}
+              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+              muted
+              preload="metadata"
+            />
+            <div style={{
+              position: 'absolute', inset: 0,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              background: 'rgba(0,0,0,0.15)',
+              transition: 'background 0.2s',
+            }}>
+              <div style={{
+                width: 40, height: 40, borderRadius: '50%',
+                background: 'rgba(255,255,255,0.9)',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+              }}>
+                <span style={{ fontSize: 14, marginLeft: 3 }}>▶</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <span style={{ fontSize: 28, opacity: 0.18 }}>▶</span>
+        )}
       </div>
 
       <div style={{ padding: '14px 16px 16px', flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -84,6 +107,7 @@ export default function CampaignsPage() {
   const router = useRouter()
   const [campaigns, setCampaigns] = useState<DbCampaign[]>([])
   const [loading, setLoading] = useState(true)
+  // detail navigation handled by router
 
   useEffect(() => {
     fetch('/api/campaigns')
@@ -150,7 +174,7 @@ export default function CampaignsPage() {
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
               {campaigns.map(c => (
-                <CampaignCard key={c.id} c={c} onClick={() => router.push('/')} />
+                <CampaignCard key={c.id} c={c} onClick={() => router.push(`/campaigns/${c.id}`)} />
               ))}
             </div>
             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
