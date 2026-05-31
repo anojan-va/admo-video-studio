@@ -174,7 +174,7 @@ export default function CampaignsPage() {
           <>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 20 }}>
               {campaigns.map(c => (
-                <CampaignCard key={c.id} c={c} onClick={() => router.push(`/campaigns/${c.id}`)} />
+                <CampaignCard key={c.id} c={c} onClick={() => c.final_url && window.open(c.final_url, '_blank')} />
               ))}
             </div>
             <div style={{ marginTop: 24, display: 'flex', justifyContent: 'flex-end' }}>
