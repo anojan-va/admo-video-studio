@@ -86,14 +86,7 @@ export default function CampaignsPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const base = process.env.NEXT_PUBLIC_SUPABASE_URL
-    const key  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-    if (!base || !key) { setLoading(false); return }
-
-    fetch(
-      `${base}/rest/v1/campaigns?select=*&order=completed_at.desc`,
-      { headers: { apikey: key, Authorization: `Bearer ${key}` } },
-    )
+    fetch('/api/campaigns')
       .then(r => r.json())
       .then((rows: unknown) => {
         setCampaigns(Array.isArray(rows) ? rows as DbCampaign[] : [])
