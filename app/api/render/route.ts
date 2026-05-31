@@ -24,12 +24,15 @@ export async function POST(req: NextRequest) {
 
   const n8nHeaders = { 'X-N8N-API-KEY': process.env.N8N_API_KEY! }
 
+  const aspectRatio = (brief.platform === 'Instagram' || brief.platform === 'TikTok') ? '9:16' : '16:9'
+
   const webhookPayload = JSON.stringify({
     campaignId,
     voiceoverScript,
     scenes: scenes.map((s, i) => ({ index: i, prompt: s.prompt, vo: s.vo })),
     audioDurationEstimate,
     theme: brief.theme,
+    aspectRatio,
   })
 
   // Snapshot the latest execution ID before triggering so we can identify ours afterward.

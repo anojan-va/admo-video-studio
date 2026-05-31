@@ -950,7 +950,7 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
     const key  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
     if (!base || !key) return
     fetch(
-      `${base}/rest/v1/campaigns?campaign_id=eq.${encodeURIComponent(campaignId)}&select=final_url`,
+      `${base}/rest/v1/campaigns?id=eq.${encodeURIComponent(campaignId)}&select=final_url`,
       { headers: { apikey: key, Authorization: `Bearer ${key}` } },
     )
       .then(r => r.json())
