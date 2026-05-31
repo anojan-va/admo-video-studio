@@ -40,7 +40,7 @@ const PLATFORM_ICONS: Record<string, React.ReactNode> = {
 const DURATIONS = ['15s', '30s', '60s'] as const
 const STAGE_LBL = ['Brief', 'Script', 'Rendering', 'Approve', 'Export'] as const
 
-const ar = (p: string) => (p === 'Instagram' || p === 'TikTok') ? '9:16' : p ? '16:9' : '—'
+const ar = (p: string) => p === 'YouTube' ? '16:9' : p ? '9:16' : '—'
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Seed data
