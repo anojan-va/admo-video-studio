@@ -238,16 +238,29 @@ function StageBar({ current, max, go }: { current: Stage; max: Stage; go: (s: St
 function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string) => void; loading: boolean }) {
   const [val, setVal] = useState('')
   const endRef = useRef<HTMLDivElement>(null)
+  const taRef  = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [msgs, loading])
+
+  useEffect(() => {
+    const el = taRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.overflowY = el.scrollHeight > 120 ? 'auto' : 'hidden'
+    el.style.height = Math.min(el.scrollHeight, 120) + 'px'
+  }, [val])
 
   const submit = () => {
     const t = val.trim()
     if (!t || loading) return
     onSend(t)
     setVal('')
+    if (taRef.current) {
+      taRef.current.style.height = 'auto'
+      taRef.current.style.overflowY = 'hidden'
+    }
   }
 
   return (
@@ -319,19 +332,24 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
         <div ref={endRef} style={{ paddingBottom: 12 }} />
       </div>
 
-      <div style={{ padding: '12px 16px', borderTop: `1px solid ${BLIGHT}`, display: 'flex', gap: 8, flexShrink: 0 }}>
-        <input
+      <div style={{ padding: '12px 16px', borderTop: `1px solid ${BLIGHT}`, display: 'flex', gap: 8, flexShrink: 0, alignItems: 'flex-end' }}>
+        <textarea
+          ref={taRef}
+          rows={1}
           value={val}
           onChange={e => setVal(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && submit()}
+          onKeyDown={e => {
+            if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit() }
+          }}
           placeholder="Describe your campaign…"
           disabled={loading}
           style={{
             flex: 1, background: '#FFFFFF', border: `1px solid ${BORDER}`,
             borderRadius: 6, padding: '8px 12px', fontSize: 12, color: T1,
             opacity: loading ? 0.6 : 1,
+            resize: 'none', overflowY: 'hidden', lineHeight: '1.4',
           }}
-        />
+        ></textarea>
         <button onClick={submit} disabled={loading} style={{
           padding: '8px 16px', borderRadius: 6, background: '#555555',
           color: '#FFFFFF', border: 'none', fontSize: 12, fontWeight: 500,
@@ -424,7 +442,7 @@ function StageBrief({
       </div>
 
       <div>
-        <FieldLabel>Duration</FieldLabel>
+        <FieldLabel>Maximum Video Length</FieldLabel>
         <div style={{ display: 'flex', gap: 8 }}>
           {DURATIONS.map(d => (
             <SelectPill key={d} on={data.duration === d} onClick={() => set({ ...data, duration: d })}>{d}</SelectPill>
@@ -629,7 +647,7 @@ function StageRendering({
 
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>We are generating your videos. This may take a few minutes.</span>
+          <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>We are generating your video. This may take a few minutes.</span>
           <span style={{ fontSize: 12, fontWeight: 500, color: done ? GREEN : '#C8923A' }}>{Math.round(pct)}%</span>
         </div>
         <div style={{ height: 5, background: S2, borderRadius: 3, overflow: 'hidden' }}>
@@ -638,11 +656,6 @@ function StageRendering({
             background: done ? GREEN : '#C8923A',
             borderRadius: 3, transition: 'width 0.6s ease',
           }} />
-        </div>
-        <div style={{ fontSize: 11, color: done ? GREEN : T2, marginTop: 9 }}>
-          {done
-            ? `✓ All ${count} scenes complete`
-            : `Processing scene ${Math.min(doneCount + 1, count)} of ${count}…`}
         </div>
       </Card>
 
@@ -655,7 +668,7 @@ function StageRendering({
             transition: 'border-color 0.4s',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>Scene {i + 1}</span>
+              <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>Your video</span>
               <Badge
                 text={status === 'complete' ? 'Complete' : status === 'rendering' ? 'Rendering' : 'Pending'}
                 variant={status === 'complete' ? 'success' : status === 'rendering' ? 'beige' : 'muted'}
@@ -924,17 +937,33 @@ function StageApprove({
 // ─────────────────────────────────────────────────────────────────────────────
 // Stage 5 — Export  (was stage 6)
 // ─────────────────────────────────────────────────────────────────────────────
-function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sceneCount: number; videoUrls: string[]; reset: () => void }) {
+function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brief: Brief; sceneCount: number; videoUrls: string[]; campaignId: string | null; reset: () => void }) {
   const [copied,  setCopied]  = useState(false)
   const [dlState, setDlState] = useState<'idle' | 'downloading' | 'error'>('idle')
-  const reviewUrl = 'review.admo.studio/c/abu-dhabi-safety-0527'
+  const [reviewUrl, setReviewUrl] = useState<string | null>(null)
 
   const finalUrl = videoUrls.find(u => /\/final\.mp4/i.test(u)) ?? videoUrls[videoUrls.length - 1]
 
+  useEffect(() => {
+    if (!campaignId) return
+    const base = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key  = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    if (!base || !key) return
+    fetch(
+      `${base}/rest/v1/campaigns?campaign_id=eq.${encodeURIComponent(campaignId)}&select=final_url`,
+      { headers: { apikey: key, Authorization: `Bearer ${key}` } },
+    )
+      .then(r => r.json())
+      .then((rows: Array<{ final_url: string }>) => {
+        if (rows[0]?.final_url) setReviewUrl(rows[0].final_url)
+      })
+      .catch(() => {})
+  }, [campaignId])
+
   const copy = () => {
-    navigator.clipboard.writeText(reviewUrl).catch(() => {})
+    navigator.clipboard.writeText(reviewUrl ?? '').catch(() => {})
     setCopied(true)
-    setTimeout(() => setCopied(false), 2200)
+    setTimeout(() => setCopied(false), 2000)
   }
 
   const download = async () => {
@@ -1023,14 +1052,15 @@ function StageExport({ brief, sceneCount, videoUrls, reset }: { brief: Brief; sc
                   borderRadius: 6, padding: '9px 12px', fontSize: 12, color: T2,
                   fontFamily: '"Roboto Mono", "Courier New", monospace',
                 }}>
-                  {reviewUrl}
+                  {reviewUrl ?? 'Loading…'}
                 </div>
-                <button onClick={copy} style={{
+                <button onClick={copy} disabled={!reviewUrl} style={{
                   padding: '9px 16px', borderRadius: 6, fontSize: 11, fontWeight: 500,
                   background: '#C8923A', color: '#FFFFFF', border: `1px solid #C8923A`,
-                  cursor: 'pointer', transition: 'all 0.3s', whiteSpace: 'nowrap',
+                  cursor: reviewUrl ? 'pointer' : 'not-allowed', transition: 'all 0.3s', whiteSpace: 'nowrap',
+                  opacity: reviewUrl ? 1 : 0.5,
                 }}>
-                  {copied ? '✓ Copied' : 'Copy link'}
+                  {copied ? 'Copied!' : 'Copy link'}
                 </button>
               </div>
               <div style={{ fontSize: 10, color: T2, marginTop: 7 }}>Expires in 30 days · Password protected</div>
@@ -1101,6 +1131,7 @@ export default function Page() {
   const [generatingScript, setGeneratingScript] = useState(false)
   const [renderExecId, setRenderExecId]   = useState<string | null>(null)
   const [renderTriggerErr, setRenderTriggerErr] = useState('')
+  const [campaignId, setCampaignId]       = useState<string | null>(null)
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -1177,6 +1208,7 @@ export default function Page() {
       const data = await res.json()
       if (data.error) { setRenderTriggerErr(data.error); return }
       setRenderExecId(data.executionId ?? null)
+      setCampaignId(data.campaignId ?? null)
     } catch (e) {
       setRenderTriggerErr(String(e))
     }
@@ -1220,7 +1252,7 @@ export default function Page() {
           {stage === 2 && <StageScript brief={brief} script={script} scenes={scenes} next={() => { go(3); triggerRender(scenes) }} onRegenerate={generateScript} generating={generatingScript} />}
           {stage === 3 && <StageRendering executionId={renderExecId} triggerError={renderTriggerErr} onComplete={handleRenderComplete} next={() => go(4)} onRetry={() => triggerRender(scenes)} />}
           {stage === 4 && <StageApprove brief={brief} videoUrls={videoUrls} scenes={scenes} script={script} next={() => go(5)} onRegenerate={updated => { setScenes(updated); setVideoUrls([]); go(3); triggerRender(updated) }} />}
-          {stage === 5 && <StageExport brief={brief} sceneCount={scenes.length || 6} videoUrls={videoUrls} reset={reset} />}
+          {stage === 5 && <StageExport brief={brief} sceneCount={scenes.length || 6} videoUrls={videoUrls} campaignId={campaignId} reset={reset} />}
         </main>
       </div>
     </div>

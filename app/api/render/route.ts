@@ -66,7 +66,7 @@ export async function POST(req: NextRequest) {
     // n8n "Respond Immediately" mode returns { executionId } right away.
     const body = await webhookRes.json().catch(() => null)
     const fastId: string | null = body?.executionId ?? body?.id ?? null
-    if (fastId) return Response.json({ executionId: fastId })
+    if (fastId) return Response.json({ executionId: fastId, campaignId })
 
   } catch (err: unknown) {
     clearTimeout(timeoutId)
@@ -110,5 +110,5 @@ export async function POST(req: NextRequest) {
     )
   }
 
-  return Response.json({ executionId: newExecId })
+  return Response.json({ executionId: newExecId, campaignId })
 }
