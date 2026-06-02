@@ -798,7 +798,7 @@ function StageApprove({
             <FieldLabel>Campaign Details</FieldLabel>
             <Card style={{ background: S2 }}>
               <p style={{ fontSize: 12, lineHeight: 1.6, color: T1, whiteSpace: 'pre-wrap', marginTop: 4 }}>
-                {script}
+                {brief.brief}
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16 }}>
                 {[brief.theme, brief.platform, brief.duration, ar(brief.platform)].filter(Boolean).map((tag, i) => (
