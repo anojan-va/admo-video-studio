@@ -9,7 +9,15 @@ export async function POST(req: NextRequest) {
   const sceneCount = brief.duration === '15s' ? 2 : brief.duration === '30s' ? 3 : 6
   const charMin   = brief.duration === '15s' ? 170 : brief.duration === '30s' ? 380 : 780
   const charMax   = brief.duration === '15s' ? 220 : brief.duration === '30s' ? 450 : 900
+  const wordMin   = brief.duration === '15s' ? 22  : brief.duration === '30s' ? 55  : 125
   const wordMax   = brief.duration === '15s' ? 30  : brief.duration === '30s' ? 65  : 135
+
+  const countWords = (text: string) => text.trim().split(/\s+/).length
+  const meetsLimits = (script: string) => {
+    const chars = script.length
+    const words = countWords(script)
+    return chars >= charMin && chars <= charMax && words >= wordMin && words <= wordMax
+  }
 
   const themeSamples = getSamplePromptsForTheme(brief.theme as Theme)
   const samplesBlock = themeSamples
@@ -24,13 +32,13 @@ Campaign details:
 - Platform: ${brief.platform}
 - Duration: ${brief.duration} → ${sceneCount} scene${sceneCount > 1 ? 's' : ''} of approximately 15 seconds each
 
-VOICEOVER LIMITS — THIS IS YOUR MOST IMPORTANT CONSTRAINT. BOTH LIMITS MUST BE RESPECTED:
+VOICEOVER LIMITS — THIS IS YOUR MOST IMPORTANT CONSTRAINT. ALL LIMITS MUST BE RESPECTED:
 - Characters: the full "script" field MUST be between ${charMin} and ${charMax} characters (including spaces).
-- Words: the full "script" field MUST NOT exceed ${wordMax} words. Count every word.
-- HARD LIMITS: Do NOT exceed ${charMax} characters or ${wordMax} words under any circumstances.
+- Words: the full "script" field MUST be between ${wordMin} and ${wordMax} words. Count every word.
+- HARD LIMITS: Do NOT exceed ${charMax} characters or ${wordMax} words. Do NOT go below ${charMin} characters or ${wordMin} words.
 - Before writing your response, count both your word count and character count and adjust until within range.
 - Distribute the script naturally across scenes — each scene's "vo" should be a proportional portion of the full script.
-- VERIFY: After writing, confirm your "script" is within ${charMin}–${charMax} characters AND ≤ ${wordMax} words. If over, shorten before responding.
+- VERIFY: After writing, confirm your "script" is within ${charMin}–${charMax} characters AND ${wordMin}–${wordMax} words. If outside range, rewrite before responding.
 
 Write a voiceover script and scene-by-scene breakdown.
 
@@ -70,21 +78,25 @@ CRITICAL — Video prompt rules (every prompt MUST follow ALL of these):
 Example of a correctly written prompt:
 "A group of Emirati men in ankle-length pristine white kandura and white ghutra secured with black agal walk purposefully across the vast white marble courtyard of the Sheikh Zayed Grand Mosque at golden hour, their warm olive complexions glowing under the late afternoon sun. The mosque's 82 domes and four towering golden minarets are reflected in the still surrounding pool. Tall date palms line the outer courtyard walls. The men converse quietly, their expressions dignified and at ease, their robes flowing gently in the warm desert breeze. Wide establishing shot with slow camera push forward, warm amber and gold sunlight, majestic and spiritual mood. Photorealistic cinematic style."`
 
-  const completion = await openai.chat.completions.create({
-    model: 'gpt-4o',
-    messages: [{ role: 'user', content: prompt }],
-    response_format: { type: 'json_object' },
-  })
+  let parsed: Record<string, unknown> = {}
+  let lastScript = ''
 
-  const content = completion.choices[0].message.content ?? '{}'
-  const parsed = JSON.parse(content)
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const retryNote = attempt === 0 ? '' : `
 
-  // Safety net: if GPT overshot the char limit, trim at the last sentence boundary
-  if (parsed.script && parsed.script.length > charMax) {
-    let trimmed = parsed.script.slice(0, charMax)
-    const lastPeriod = trimmed.lastIndexOf('.')
-    if (lastPeriod > charMin) trimmed = trimmed.slice(0, lastPeriod + 1)
-    parsed.script = trimmed
+RETRY ATTEMPT ${attempt + 1}: Your previous script "${lastScript.slice(0, 80)}..." was ${lastScript.length} characters and ${countWords(lastScript)} words. This does NOT meet the required range of ${charMin}–${charMax} characters and ${wordMin}–${wordMax} words. Rewrite the voiceover strictly within these limits. Do not go outside this range.`
+
+    const completion = await openai.chat.completions.create({
+      model: 'gpt-4o',
+      messages: [{ role: 'user', content: prompt + retryNote }],
+      response_format: { type: 'json_object' },
+    })
+
+    const content = completion.choices[0].message.content ?? '{}'
+    parsed = JSON.parse(content)
+    lastScript = typeof parsed.script === 'string' ? parsed.script : ''
+
+    if (lastScript && meetsLimits(lastScript)) break
   }
 
   return Response.json(parsed)
