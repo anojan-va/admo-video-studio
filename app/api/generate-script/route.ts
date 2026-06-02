@@ -7,8 +7,8 @@ export async function POST(req: NextRequest) {
   const { brief } = await req.json()
 
   const sceneCount = brief.duration === '15s' ? 2 : brief.duration === '30s' ? 3 : 6
-  const charMin   = brief.duration === '15s' ? 230 : brief.duration === '30s' ? 420 : 850
-  const charMax   = brief.duration === '15s' ? 260 : brief.duration === '30s' ? 450 : 900
+  const charMin   = brief.duration === '15s' ? 230 : brief.duration === '30s' ? 550 : 1150
+  const charMax   = brief.duration === '15s' ? 260 : brief.duration === '30s' ? 620 : 1250
 
   const themeSamples = getSamplePromptsForTheme(brief.theme as Theme)
   const samplesBlock = themeSamples
