@@ -3,7 +3,9 @@
     "allow": [
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\Freelance\\\\upwork\\\\michal\\\\frontend\\\\admo-video-studio\\\\admo-video-studio\\\\app\\\\api\\\\chat\")",
       "PowerShell(New-Item -ItemType Directory -Force \"d:\\\\Freelance\\\\upwork\\\\michal\\\\frontend\\\\admo-video-studio\\\\admo-video-studio\\\\app\\\\api\\\\generate-script\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(curl -s -H \"X-N8N-API-KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNTk4NTFmZi01ODhkLTRkNTUtODAyZi1lZGUyMGQxNmMxZWIiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMDFiNzM1NzUtYmRhMi00OTI4LTk1MDQtMzdmYTA3MWFkOGViIiwiaWF0IjoxNzc5OTk1NTk1LCJleHAiOjE3ODI1MzI4MDB9.IWUEJQYMYFUOzqkV71OFZJsXQlwQURelw46McQarq2E\" \"https://primary-production-1e62e.up.railway.app/api/v1/executions?workflowId=7wmYRLI6yvTS5kM3&limit=1\")",
+      "Bash(curl -s -H \"X-N8N-API-KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJjNTk4NTFmZi01ODhkLTRkNTUtODAyZi1lZGUyMGQxNmMxZWIiLCJpc3MiOiJuOG4iLCJhdWQiOiJwdWJsaWMtYXBpIiwianRpIjoiMDFiNzM1NzUtYmRhMi00OTI4LTk1MDQtMzdmYTA3MWFkOGViIiwiaWF0IjoxNzc5OTk1NTk1LCJleHAiOjE3ODI1MzI4MDB9.IWUEJQYMYFUOzqkV71OFZJsXQlwQURelw46McQarq2E\" \"https://primary-production-1e62e.up.railway.app/api/v1/executions/195\")"
     ]
   }
 }
