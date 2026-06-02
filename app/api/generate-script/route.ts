@@ -6,7 +6,7 @@ export async function POST(req: NextRequest) {
   const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
   const { brief } = await req.json()
 
-  const sceneCount = brief.duration === '15s' ? 2 : brief.duration === '30s' ? 4 : 7
+  const sceneCount = brief.duration === '15s' ? 2 : brief.duration === '30s' ? 3 : 6
   const charMin   = brief.duration === '15s' ? 170 : brief.duration === '30s' ? 380 : 780
   const charMax   = brief.duration === '15s' ? 220 : brief.duration === '30s' ? 450 : 900
   const wordMax   = brief.duration === '15s' ? 30  : brief.duration === '30s' ? 65  : 135
