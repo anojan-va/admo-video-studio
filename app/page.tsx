@@ -581,8 +581,18 @@ function StageRendering({
     setErrorMsg('')
 
     let cancelled = false
+    const deadline = Date.now() + 30 * 60 * 1000 // 30 minutes
+
     const poll = setInterval(async () => {
       if (cancelled) { clearInterval(poll); return }
+
+      if (Date.now() > deadline) {
+        clearInterval(poll)
+        setErrorMsg('Video generation timed out after 30 minutes. Please retry.')
+        setRenderStatus('error')
+        return
+      }
+
       try {
         const res = await fetch(`/api/render/status?campaignId=${campaignId}`)
         const status = await res.json()
@@ -766,17 +776,18 @@ function StageApprove({
 
         {/* Video player — 9:16 portrait */}
         <div style={{
-          flexShrink: 0, width: 280,
+          flexShrink: 0, width: 220,
           background: '#000', borderRadius: 12, overflow: 'hidden',
           border: `1px solid ${BORDER}`,
           boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          maxHeight: 'calc(100vh - 160px)',
         }}>
           {finalUrl ? (
             <video
               src={finalUrl}
               controls
               autoPlay={false}
-              style={{ width: '100%', display: 'block' }}
+              style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
             />
           ) : (
             <div style={{
@@ -994,17 +1005,18 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flex: 1 }}>
 
         <div style={{
-          flexShrink: 0, width: 280,
+          flexShrink: 0, width: 220,
           background: '#000', borderRadius: 12, overflow: 'hidden',
           border: `1px solid ${BORDER}`,
           boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          maxHeight: 'calc(100vh - 160px)',
         }}>
           {finalUrl ? (
             <video
               src={finalUrl}
               controls
               autoPlay={false}
-              style={{ width: '100%', display: 'block' }}
+              style={{ width: '100%', height: '100%', display: 'block', objectFit: 'contain' }}
             />
           ) : (
             <div style={{
