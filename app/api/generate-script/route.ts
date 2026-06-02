@@ -53,16 +53,17 @@ Requirements:
 CRITICAL — Video prompt rules (every prompt MUST follow ALL of these):
 1. MINIMUM 80 words per prompt. Short one-line prompts are strictly forbidden.
 2. Set exclusively in Abu Dhabi, UAE — never generic or unspecified locations.
-3. Always feature Muslim Arab people authentically: men wearing traditional white kandura/dishdasha with ghutra headdress, women in elegant black abaya and hijab, dignified and warm expressions, natural body language.
-4. Name a specific Abu Dhabi landmark or district in every prompt — choose from: Sheikh Zayed Grand Mosque (white marble domes, golden minarets), Abu Dhabi Corniche waterfront (palm-lined promenade, azure Arabian Gulf), ADNOC headquarters tower, Al Maryah Island financial district, Louvre Abu Dhabi (geometric dome over water), Etihad Towers (curved skyscrapers), Emirates Palace (golden palatial facade), Yas Island, Al Reem Island, Saadiyat Island cultural quarter.
-5. Describe ONLY what is happening in the scene — the story, the people, the place, and the atmosphere.
-6. Do NOT mention camera angles, shot types, camera movement, lens choices, or framing.
-7. Do NOT mention aspect ratio, orientation, resolution, or video duration.
-8. Do NOT mention colour grade, colour palette, or post-processing style.
-9. Do NOT include any technical suffix or closing tag.
+3. Always feature Muslim Arab people with full physical and clothing authenticity: men wear ankle-length pristine white kandura/dishdasha, white ghutra headdress secured with a black agal rope, well-groomed dark beard, warm olive or tan complexion; women wear flowing floor-length black abaya and black shayla hijab, graceful posture, warm dark eyes, olive complexion. Never place Arab characters in Western clothing unless the brief explicitly requires it.
+4. Name a specific Abu Dhabi landmark or district in every prompt — choose from: Sheikh Zayed Grand Mosque (white marble domes, golden minarets, vast marble courtyard), Abu Dhabi Corniche waterfront (palm-lined marble promenade, azure Arabian Gulf), ADNOC headquarters tower, Al Maryah Island financial district (glass towers, waterfront), Louvre Abu Dhabi (geometric dome over water, Saadiyat Island), Etihad Towers (curved skyscrapers), Emirates Palace (golden palatial facade, grand arched entrance), Yas Island, Al Reem Island, Saadiyat Island cultural quarter.
+5. Ground every scene in authentic UAE environment — include at least two of: tall date palm trees, white marble or sandstone surfaces, Arabic calligraphy signage, white Toyota Land Cruiser or Nissan Patrol SUVs, warm desert haze or golden desert light, the azure Arabian Gulf, traditional Arabic architecture with geometric patterns.
+6. Describe ONLY what is happening in the scene — the story, the people, the place, and the atmosphere.
+7. Do NOT mention camera angles, shot types, camera movement, lens choices, or framing.
+8. Do NOT mention aspect ratio, orientation, resolution, or video duration.
+9. Do NOT mention colour grade, colour palette, or post-processing style.
+10. Do NOT include any technical suffix or closing tag.
 
 Example of a correctly written prompt:
-"A group of Emirati men in pristine white kandura and ghutra walk purposefully across the vast marble courtyard of the Sheikh Zayed Grand Mosque at golden hour. The mosque's 82 domes and four towering golden minarets glow warmly under the late afternoon sun, their reflections shimmering in the surrounding pool. The men converse quietly, their expressions dignified and at ease. Families and visitors from around the world move respectfully through the space. The atmosphere is majestic, spiritual, and deeply rooted in heritage."`
+"A group of Emirati men in ankle-length pristine white kandura and white ghutra secured with black agal walk purposefully across the vast white marble courtyard of the Sheikh Zayed Grand Mosque at golden hour, their warm olive complexions glowing under the late afternoon sun. The mosque's 82 domes and four towering golden minarets are reflected in the still surrounding pool. Tall date palms line the outer courtyard walls. The men converse quietly, their expressions dignified and at ease, their robes flowing gently in the warm desert breeze. Families from around the world move respectfully through the space. The atmosphere is majestic, spiritual, and deeply rooted in Emirati heritage."`
 
   const completion = await openai.chat.completions.create({
     model: 'gpt-4o',
