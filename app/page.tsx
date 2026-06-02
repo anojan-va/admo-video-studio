@@ -549,9 +549,9 @@ function StageScript({
 // Stage 3 — Rendering  (triggers n8n, polls for completion)
 // ─────────────────────────────────────────────────────────────────────────────
 function StageRendering({
-  executionId, triggerError, onComplete, next, onRetry,
+  campaignId, triggerError, onComplete, next, onRetry,
 }: {
-  executionId: string | null   // set by parent's event handler — never double-fires
+  campaignId: string | null
   triggerError: string
   onComplete: (videoUrls: string[]) => void
   next: () => void
@@ -573,9 +573,9 @@ function StageRendering({
 
   const count = 1
 
-  // Poll for execution status — only runs once executionId is known
+  // Poll for completion by checking Supabase via campaignId
   useEffect(() => {
-    if (!executionId) return
+    if (!campaignId) return
     setRenderStatus('running')
     setPct(0)
     setErrorMsg('')
@@ -584,7 +584,7 @@ function StageRendering({
     const poll = setInterval(async () => {
       if (cancelled) { clearInterval(poll); return }
       try {
-        const res = await fetch(`/api/render/status?executionId=${executionId}`)
+        const res = await fetch(`/api/render/status?campaignId=${campaignId}`)
         const status = await res.json()
         if (status.status === 'success') {
           clearInterval(poll)
@@ -603,8 +603,7 @@ function StageRendering({
     }, 5000)
 
     return () => { cancelled = true; clearInterval(poll) }
-  // executionId changes only when parent fires a new render (event handler)
-  }, [executionId])
+  }, [campaignId])
 
   // Animate progress up to 90% while n8n is running, jump to 100% on success
   useEffect(() => {
@@ -1129,7 +1128,6 @@ export default function Page() {
   const [videoUrls, setVideoUrls]   = useState<string[]>([])
   const [chatLoading, setChatLoading]         = useState(false)
   const [generatingScript, setGeneratingScript] = useState(false)
-  const [renderExecId, setRenderExecId]   = useState<string | null>(null)
   const [renderTriggerErr, setRenderTriggerErr] = useState('')
   const [campaignId, setCampaignId]       = useState<string | null>(null)
 
@@ -1197,8 +1195,8 @@ export default function Page() {
 
   // Called from the "Render" button — a plain event handler, never double-fires
   const triggerRender = async (currentScenes: Scene[]) => {
-    setRenderExecId(null)
     setRenderTriggerErr('')
+    setCampaignId(null)
     try {
       const res = await fetch('/api/render', {
         method: 'POST',
@@ -1207,7 +1205,6 @@ export default function Page() {
       })
       const data = await res.json()
       if (data.error) { setRenderTriggerErr(data.error); return }
-      setRenderExecId(data.executionId ?? null)
       setCampaignId(data.campaignId ?? null)
     } catch (e) {
       setRenderTriggerErr(String(e))
@@ -1225,7 +1222,6 @@ export default function Page() {
     setScript('')
     setScenes([])
     setVideoUrls([])
-    setRenderExecId(null)
     setRenderTriggerErr('')
     setMaxStage(1)
   }
@@ -1250,7 +1246,7 @@ export default function Page() {
         <main style={{ flex: 1, overflow: 'hidden', background: BG, minWidth: 0 }}>
           {stage === 1 && <StageBrief data={brief} set={setBrief} onGenerate={handleGenerateAndAdvance} generating={generatingScript} />}
           {stage === 2 && <StageScript brief={brief} script={script} scenes={scenes} next={() => { go(3); triggerRender(scenes) }} onRegenerate={generateScript} generating={generatingScript} />}
-          {stage === 3 && <StageRendering executionId={renderExecId} triggerError={renderTriggerErr} onComplete={handleRenderComplete} next={() => go(4)} onRetry={() => triggerRender(scenes)} />}
+          {stage === 3 && <StageRendering campaignId={campaignId} triggerError={renderTriggerErr} onComplete={handleRenderComplete} next={() => go(4)} onRetry={() => triggerRender(scenes)} />}
           {stage === 4 && <StageApprove brief={brief} videoUrls={videoUrls} scenes={scenes} script={script} next={() => go(5)} onRegenerate={updated => { setScenes(updated); setVideoUrls([]); go(3); triggerRender(updated) }} />}
           {stage === 5 && <StageExport brief={brief} sceneCount={scenes.length || 6} videoUrls={videoUrls} campaignId={campaignId} reset={reset} />}
         </main>
