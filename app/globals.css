@@ -15,8 +15,8 @@ body {
 }
 
 body {
-  background: #f8f7f4;
-  color: #1a1a1a;
+  background: #0a0a0a;
+  color: #ffffff;
   font-family: var(--font-inter), "Inter", system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -30,12 +30,12 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: rgba(26, 26, 26, 0.15);
+  background: rgba(255, 255, 255, 0.12);
   border-radius: 2px;
 }
 
 ::placeholder {
-  color: #9a9690;
+  color: #4a5568;
   opacity: 1;
 }
 
@@ -43,7 +43,8 @@ input:focus,
 textarea:focus,
 select:focus {
   outline: none;
-  border-color: rgba(0, 77, 64, 0.5) !important;
+  border-color: #00d4ff !important;
+  box-shadow: 0 0 8px rgba(0, 212, 255, 0.3) !important;
 }
 
 button {

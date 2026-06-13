@@ -2,19 +2,21 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import { AdmoLogo } from './components/AdmoLogo'
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Design tokens
+// Design tokens — dark neon theme
 // ─────────────────────────────────────────────────────────────────────────────
-const BG     = '#F8F7F4'
-const S1     = '#FFFFFF'
-const S2     = '#F2EFE9'
-const RED    = '#B22234'
-const GREEN  = '#C8923A'
-const T1     = '#1A1A1A'
-const T2     = '#5F5E5A'
-const BORDER = '#E8E4DE'
-const BLIGHT = 'rgba(232,228,222,0.7)'
+const BG     = '#1A1A2E'                   // right panel background
+const S1     = '#16213E'                   // card surfaces
+const S2     = '#0F1B30'                   // input / deeper surfaces
+const CYAN   = '#00D4FF'                   // primary accent
+const GREEN  = '#22C55E'                   // success
+const T1     = '#FFFFFF'                   // text primary
+const T2     = '#8892A4'                   // text secondary
+const BORDER = 'rgba(255,255,255,0.08)'
+const BLIGHT = 'rgba(255,255,255,0.05)'
+const ERR    = '#FF6B6B'                   // error-only
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Types & constants
@@ -59,7 +61,7 @@ const INIT_CHAT: Msg[] = [
 // ─────────────────────────────────────────────────────────────────────────────
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div style={{ fontSize: 10, fontWeight: 500, color: T2, textTransform: 'uppercase', letterSpacing: '0.09em', marginBottom: 8 }}>
+    <div style={{ fontSize: 11, fontWeight: 600, color: T2, textTransform: 'uppercase', letterSpacing: '0.12em', marginBottom: 8 }}>
       {children}
     </div>
   )
@@ -68,12 +70,13 @@ function FieldLabel({ children }: { children: React.ReactNode }) {
 function SelectPill({ children, on, onClick, icon }: { children: React.ReactNode; on: boolean; onClick: () => void; icon?: React.ReactNode }) {
   return (
     <button onClick={onClick} style={{
-      padding: '5px 15px', borderRadius: 20, fontSize: 12, fontWeight: 400,
-      background: on ? '#C8923A' : S1,
+      padding: '5px 15px', borderRadius: 20, fontSize: 12, fontWeight: 500,
+      background: on ? '#7B2FBE' : 'transparent',
       color:      on ? '#FFFFFF' : T2,
-      border:     on ? `1px solid #C8923A` : `1px solid ${BORDER}`,
+      border:     on ? `1px solid #7B2FBE` : `1px solid #2D3748`,
       cursor: 'pointer', transition: 'all 0.3s',
       display: 'inline-flex', alignItems: 'center', gap: 5,
+      boxShadow: on ? '0 0 8px rgba(123,47,190,0.3)' : 'none',
     }}>
       {icon}
       {children}
@@ -93,14 +96,14 @@ function ActionBtn({
   fullWidth?: boolean
 }) {
   const vs = disabled
-    ? { bg: S2, color: T2 + '88', border: `1px solid ${BORDER}` }
-    : variant === 'primary' ? { bg: RED,   color: '#FFFFFF', border: 'none' }
-    : variant === 'success' ? { bg: 'rgba(30,123,52,0.10)', color: GREEN, border: `1px solid rgba(30,123,52,0.30)` }
-    :                          { bg: S1,   color: T2,        border: `1px solid ${BORDER}` }
+    ? { bg: 'transparent', color: '#3A4556', border: `1px solid #2D3748` }
+    : variant === 'primary' ? { bg: 'transparent', color: CYAN, border: `2px solid ${CYAN}` }
+    : variant === 'success' ? { bg: 'rgba(34,197,94,0.10)', color: GREEN, border: `1px solid rgba(34,197,94,0.30)` }
+    :                          { bg: 'transparent', color: T2, border: `1px solid ${BORDER}` }
 
   return (
     <button onClick={!disabled ? onClick : undefined} style={{
-      padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 500,
+      padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
       background: vs.bg, color: vs.color, border: vs.border,
       cursor: disabled ? 'not-allowed' : 'pointer',
       transition: 'all 0.3s', whiteSpace: 'nowrap',
@@ -115,16 +118,16 @@ type BadgeVariant = 'default'|'tag'|'success'|'muted'|'amber'|'beige'
 
 function Badge({ text, variant = 'default' }: { text: string; variant?: BadgeVariant }) {
   const cfgs: Record<BadgeVariant, { bg: string; color: string; border: string }> = {
-    default: { bg: S2,                           color: T2,       border: BORDER },
-    tag:     { bg: 'rgba(178,34,52,0.07)',       color: RED,      border: 'rgba(178,34,52,0.22)' },
-    success: { bg: 'rgba(30,123,52,0.09)',       color: GREEN,    border: 'rgba(30,123,52,0.25)' },
-    muted:   { bg: 'rgba(26,26,26,0.05)',        color: T2,       border: BLIGHT },
-    amber:   { bg: '#C8923A',                    color: '#FFFFFF', border: '#C8923A' },
-    beige:   { bg: '#F0EBE3',                    color: '#2D2D2D', border: '#F0EBE3' },
+    default: { bg: S1,                            color: T2,        border: BORDER },
+    tag:     { bg: 'rgba(0,212,255,0.10)',        color: CYAN,      border: 'rgba(0,212,255,0.25)' },
+    success: { bg: 'rgba(34,197,94,0.09)',        color: GREEN,     border: 'rgba(34,197,94,0.25)' },
+    muted:   { bg: 'rgba(255,255,255,0.05)',      color: T2,        border: BLIGHT },
+    amber:   { bg: '#7B2FBE',                     color: '#FFFFFF', border: '#7B2FBE' },
+    beige:   { bg: S1,                            color: T1,        border: BORDER },
   }
   const c = cfgs[variant]
   return (
-    <span style={{ padding: '2px 9px', borderRadius: 20, fontSize: 10, fontWeight: 500, background: c.bg, color: c.color, border: `1px solid ${c.border}`, whiteSpace: 'nowrap' }}>
+    <span style={{ padding: '2px 9px', borderRadius: 20, fontSize: 12, fontWeight: 500, background: c.bg, color: c.color, border: `1px solid ${c.border}`, whiteSpace: 'nowrap' }}>
       {text}
     </span>
   )
@@ -146,30 +149,25 @@ function TopNav() {
 
   return (
     <header style={{
-      height: 56, background: RED, borderBottom: `1px solid ${RED}`,
+      height: 56, background: '#0A0A0A', borderBottom: `3px solid #F5A623`,
       display: 'flex', alignItems: 'center', justifyContent: 'space-between',
       padding: '0 24px', flexShrink: 0,
     }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-        <span style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 15, fontWeight: 700, color: '#FFFFFF', letterSpacing: '0.07em' }}>
-          ADMO
-        </span>
-        <span style={{ color: 'rgba(255,255,255,0.5)', fontSize: 13 }}>|</span>
-        <span style={{ fontSize: 13, fontWeight: 700, color: '#FFFFFF' }}>Video Studio</span>
-      </div>
+      <AdmoLogo />
 
       <div style={{ display: 'flex', gap: 4 }}>
         <button style={{
-          padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-          background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.3)', cursor: 'pointer',
+          padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500,
+          background: 'transparent', color: '#F5A623', border: `1px solid #F5A623`, cursor: 'pointer',
+          transition: 'all 0.3s',
         }}>
           Creation Canvas
         </button>
         <button
           onClick={() => router.push('/campaigns')}
           style={{
-            padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: 'transparent', color: 'rgba(255,255,255,0.75)', border: '1px solid transparent',
+            padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500,
+            background: 'transparent', color: T2, border: '1px solid transparent',
             cursor: 'pointer', transition: 'color 0.3s',
           }}
         >
@@ -178,7 +176,8 @@ function TopNav() {
       </div>
 
       <div style={{
-        width: 30, height: 30, borderRadius: '50%', background: '#2D2D2D',
+        width: 30, height: 30, borderRadius: '50%', background: '#2D3748',
+        border: '1px solid #F5A623',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         fontSize: 11, fontWeight: 700, color: '#FFFFFF',
       }}>
@@ -194,7 +193,7 @@ function TopNav() {
 function StageBar({ current, max, go }: { current: Stage; max: Stage; go: (s: Stage) => void }) {
   return (
     <div style={{
-      height: 48, background: S1, borderBottom: `1px solid ${BLIGHT}`,
+      height: 48, background: '#0A0A0A', borderBottom: `1px solid rgba(0,212,255,0.1)`,
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       gap: 2, flexShrink: 0, padding: '0 16px',
     }}>
@@ -211,11 +210,13 @@ function StageBar({ current, max, go }: { current: Stage; max: Stage; go: (s: St
               style={{
                 display: 'flex', alignItems: 'center', gap: 5,
                 padding: '4px 14px', borderRadius: 20, fontSize: 11, fontWeight: 500,
-                background: act ? T1 : done ? 'rgba(26,26,26,0.07)' : 'transparent',
-                color:      act ? '#FFFFFF' : done ? T1 : locked ? 'rgba(95,94,90,0.35)' : T2,
-                border:     act ? 'none' : done ? `1px solid rgba(26,26,26,0.20)` : `1px solid ${locked ? 'rgba(232,228,222,0.4)' : BLIGHT}`,
+                fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif",
+                background: act ? CYAN : done ? 'rgba(34,197,94,0.12)' : 'transparent',
+                color:      act ? '#0A0A0A' : done ? '#FFFFFF' : '#8892A4',
+                border:     act ? 'none' : done ? `1px solid #4A5568` : `1px solid #2D3748`,
+                boxShadow:  act ? '0 0 10px rgba(0,212,255,0.5)' : 'none',
                 cursor:     locked ? 'default' : 'pointer',
-                opacity:    locked ? 0.45 : 1,
+                opacity:    1,
                 transition: 'all 0.3s',
               }}
             >
@@ -223,7 +224,7 @@ function StageBar({ current, max, go }: { current: Stage; max: Stage; go: (s: St
               {lbl}
             </button>
             {i < STAGE_LBL.length - 1 && (
-              <span style={{ color: BORDER, fontSize: 14, margin: '0 1px', userSelect: 'none', lineHeight: 1 }}>›</span>
+              <span style={{ color: '#4A5568', fontSize: 14, margin: '0 1px', userSelect: 'none', lineHeight: 1 }}>›</span>
             )}
           </div>
         )
@@ -266,12 +267,12 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
   return (
     <aside style={{
       width: '33.333%', flexShrink: 0,
-      background: '#FFFFFF', borderRight: `1px solid ${BORDER}`,
+      background: '#0A0A0A', borderRight: `1px solid rgba(0,212,255,0.2)`,
       display: 'flex', flexDirection: 'column',
     }}>
-      <div style={{ padding: '14px 20px 12px', borderBottom: `1px solid ${BLIGHT}`, flexShrink: 0 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: T1 }}>AI Assistant</div>
-        <div style={{ fontSize: 11, color: T2, marginTop: 4 }}>Use the ADMO AI assistant to complete your brief, or edit the fields directly.</div>
+      <div style={{ padding: '14px 20px 12px', borderBottom: `1px solid rgba(255,255,255,0.06)`, flexShrink: 0 }}>
+        <div style={{ fontSize: 18, fontWeight: 700, color: T1, fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif" }}>AI Assistant</div>
+        <div style={{ fontSize: 13, color: T2, marginTop: 4 }}>Use the ADMO AI assistant to complete your brief, or edit the fields directly.</div>
       </div>
 
       <div style={{ flex: 1, overflowY: 'auto', padding: '16px 16px 0', display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -279,10 +280,10 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
           <div key={i} style={{ display: 'flex', justifyContent: m.role === 'user' ? 'flex-end' : 'flex-start', alignItems: 'flex-start', gap: 8 }}>
             {m.role === 'ai' && (
               <div style={{
-                width: 22, height: 22, borderRadius: '50%', background: '#F2F2F2',
+                width: 22, height: 22, borderRadius: '50%', background: '#1A1A2E',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: 7, fontWeight: 700, color: T1, flexShrink: 0, marginTop: 1,
-                border: `1px solid ${BORDER}`,
+                fontSize: 7, fontWeight: 700, color: CYAN, flexShrink: 0, marginTop: 1,
+                border: `1px solid rgba(0,212,255,0.3)`,
               }}>
                 AI
               </div>
@@ -290,16 +291,16 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
             <div style={{
               maxWidth: '78%', padding: '9px 13px',
               borderRadius: m.role === 'ai' ? '2px 10px 10px 10px' : '10px 2px 10px 10px',
-              background: m.role === 'ai' ? '#F2F2F2' : '#D0D0D0',
-              border: `1px solid ${BORDER}`,
-              fontSize: 12, lineHeight: 1.6,
+              background: m.role === 'ai' ? '#1A1A2E' : '#1C2A3A',
+              border: `1px solid ${m.role === 'ai' ? 'rgba(0,212,255,0.15)' : BORDER}`,
+              fontSize: 14, lineHeight: 1.5,
               color: T1,
             }}>
               {m.text}
             </div>
             {m.role === 'user' && (
               <div style={{
-                width: 22, height: 22, borderRadius: '50%', background: '#D1CEC9',
+                width: 22, height: 22, borderRadius: '50%', background: '#2D3748',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 fontSize: 7, fontWeight: 700, color: T1, flexShrink: 0, marginTop: 1,
               }}>
@@ -312,17 +313,17 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
         {loading && (
           <div style={{ display: 'flex', alignItems: 'flex-start', gap: 8 }}>
             <div style={{
-              width: 22, height: 22, borderRadius: '50%', background: '#BDBDBD',
+              width: 22, height: 22, borderRadius: '50%', background: '#1A1A2E',
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              fontSize: 7, fontWeight: 700, color: T1, flexShrink: 0, marginTop: 1,
-              border: `1px solid ${BORDER}`,
+              fontSize: 7, fontWeight: 700, color: CYAN, flexShrink: 0, marginTop: 1,
+              border: `1px solid rgba(0,212,255,0.3)`,
             }}>
               AI
             </div>
             <div style={{
               padding: '9px 13px', borderRadius: '2px 10px 10px 10px',
-              background: '#F2F2F2', border: `1px solid ${BORDER}`,
-              fontSize: 12, color: T2, fontStyle: 'italic',
+              background: '#1A1A2E', border: `1px solid rgba(0,212,255,0.15)`,
+              fontSize: 14, color: T2, fontStyle: 'italic',
             }}>
               Thinking…
             </div>
@@ -332,7 +333,7 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
         <div ref={endRef} style={{ paddingBottom: 12 }} />
       </div>
 
-      <div style={{ padding: '12px 16px', borderTop: `1px solid ${BLIGHT}`, display: 'flex', gap: 8, flexShrink: 0, alignItems: 'flex-end' }}>
+      <div style={{ padding: '12px 16px', borderTop: `1px solid rgba(255,255,255,0.06)`, display: 'flex', gap: 8, flexShrink: 0, alignItems: 'flex-end' }}>
         <textarea
           ref={taRef}
           rows={1}
@@ -344,15 +345,15 @@ function ChatPanel({ msgs, onSend, loading }: { msgs: Msg[]; onSend: (t: string)
           placeholder="Describe your campaign…"
           disabled={loading}
           style={{
-            flex: 1, background: '#FFFFFF', border: `1px solid ${BORDER}`,
-            borderRadius: 6, padding: '8px 12px', fontSize: 12, color: T1,
+            flex: 1, background: '#111827', border: `1px solid #2D3748`,
+            borderRadius: 6, padding: '8px 12px', fontSize: 14, color: T1,
             opacity: loading ? 0.6 : 1,
             resize: 'none', overflowY: 'hidden', lineHeight: '1.4',
           }}
         ></textarea>
         <button onClick={submit} disabled={loading} style={{
-          padding: '8px 16px', borderRadius: 6, background: '#555555',
-          color: '#FFFFFF', border: 'none', fontSize: 12, fontWeight: 500,
+          padding: '8px 16px', borderRadius: 6, background: CYAN,
+          color: '#0A0A0A', border: 'none', fontSize: 14, fontWeight: 600,
           cursor: loading ? 'not-allowed' : 'pointer',
           opacity: loading ? 0.6 : 1,
           transition: 'opacity 0.3s',
@@ -386,7 +387,7 @@ function StageBrief({
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: T1, margin: 0, letterSpacing: '-0.02em', fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif" }}>
           Create your video campaign
         </h1>
       </div>
@@ -399,12 +400,12 @@ function StageBrief({
           placeholder="Describe the campaign goal, key messages, and tone you're aiming for…"
           rows={4}
           style={{
-            width: '100%', background: S2, border: `1px solid ${BORDER}`,
-            borderRadius: 6, padding: '10px 12px', fontSize: 12, color: T1,
-            resize: 'vertical', lineHeight: 1.65,
+            width: '100%', background: '#0F1B30', border: `1px solid rgba(255,255,255,0.12)`,
+            borderRadius: 6, padding: '10px 12px', fontSize: 15, color: T1,
+            resize: 'vertical', lineHeight: 1.6,
           }}
         />
-        <div style={{ fontSize: 10, marginTop: 4, color: (triedSubmit && data.brief.length < 20) ? RED : '#9E9E9E' }}>
+        <div style={{ fontSize: 12, marginTop: 4, color: (triedSubmit && data.brief.length < 20) ? ERR : T2 }}>
           {data.brief.length} characters
           {data.brief.length < 20 ? ` — ${20 - data.brief.length} more required` : '  ✓'}
         </div>
@@ -436,7 +437,7 @@ function StageBrief({
             {ar(data.platform)}
           </div>
           {data.platform && (
-            <div style={{ fontSize: 10, color: T2, marginTop: 4 }}>Auto-locked</div>
+            <div style={{ fontSize: 12, color: T2, marginTop: 4 }}>Auto-locked</div>
           )}
         </div>
       </div>
@@ -475,7 +476,7 @@ function StageScript({
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: T1, margin: 0, letterSpacing: '-0.02em', fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif" }}>
           Your AI-Generated Script
         </h1>
       </div>
@@ -484,11 +485,11 @@ function StageScript({
         <FieldLabel>Full Voiceover</FieldLabel>
         <Card style={{ background: S2 }}>
         {generating ? (
-          <div style={{ padding: '24px 0', fontSize: 12, color: T2, fontStyle: 'italic' }}>
+          <div style={{ padding: '24px 0', fontSize: 15, color: T2, fontStyle: 'italic' }}>
             Generating script…
           </div>
         ) : (
-          <p style={{ fontSize: 12, lineHeight: 1.6, color: T1, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+          <p style={{ fontSize: 15, lineHeight: 1.6, color: T1, whiteSpace: 'pre-wrap', marginTop: 4 }}>
             {script}
           </p>
         )}
@@ -507,15 +508,15 @@ function StageScript({
             {scenes.map((scene, i) => (
               <div key={i} style={{ background: S2, border: `1px solid ${BORDER}`, borderRadius: 8, padding: '14px 16px', display: 'flex', gap: 14, alignItems: 'center' }}>
                 <div style={{
-                  width: 28, height: 28, borderRadius: 6, background: S2, border: `1px solid ${BORDER}`,
+                  width: 28, height: 28, borderRadius: 6, background: S1, border: `1px solid ${BORDER}`,
                   display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  fontSize: 11, fontWeight: 500, color: '#2D2D2D', flexShrink: 0,
+                  fontSize: 11, fontWeight: 500, color: T2, flexShrink: 0,
                 }}>
                   {i + 1}
                 </div>
                 <div>
-                  <div style={{ fontSize: 11, color: T2, marginBottom: 5 }}>Scene {i + 1}</div>
-                  <p style={{ fontSize: 12, color: T1, lineHeight: 1.65 }}>{scene.vo}</p>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: T2, marginBottom: 5 }}>Scene {i + 1}</div>
+                  <p style={{ fontSize: 15, color: T1, lineHeight: 1.6 }}>{scene.vo}</p>
                 </div>
               </div>
             ))}
@@ -528,8 +529,8 @@ function StageScript({
           onClick={!generating ? onRegenerate : undefined}
           disabled={generating}
           style={{
-            padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-            background: '#FFFFFF', color: RED, border: `1px solid ${RED}`,
+            padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
+            background: 'transparent', color: CYAN, border: `1px solid ${CYAN}`,
             cursor: generating ? 'not-allowed' : 'pointer',
             transition: 'all 0.3s', whiteSpace: 'nowrap',
             opacity: generating ? 0.5 : 1,
@@ -639,8 +640,8 @@ function StageRendering({
     return (
       <div style={{ height: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: 16, padding: '32px 36px' }}>
         <div style={{ fontSize: 32 }}>⚠</div>
-        <h1 style={{ fontFamily: 'Georgia, "Times New Roman", serif', fontSize: 20, fontWeight: 400, color: T1 }}>Rendering failed</h1>
-        <p style={{ fontSize: 12, color: T2, textAlign: 'center', maxWidth: 400 }}>{errorMsg || 'Could not connect to the n8n video generation workflow.'}</p>
+        <h1 style={{ fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif", fontSize: 28, fontWeight: 700, color: T1, letterSpacing: '-0.02em' }}>Rendering failed</h1>
+        <p style={{ fontSize: 15, color: T2, textAlign: 'center', maxWidth: 400 }}>{errorMsg || 'Could not connect to the n8n video generation workflow.'}</p>
         <ActionBtn onClick={onRetry}>Retry</ActionBtn>
       </div>
     )
@@ -649,20 +650,20 @@ function StageRendering({
   return (
     <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
       <div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0, marginBottom: 6 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: T1, margin: 0, marginBottom: 6, letterSpacing: '-0.02em', fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif" }}>
           {done ? 'Videos generated' : 'Generating your videos'}
         </h1>
       </div>
 
       <Card>
         <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 12 }}>
-          <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>We are generating your video. This may take a few minutes.</span>
-          <span style={{ fontSize: 12, fontWeight: 500, color: done ? GREEN : '#C8923A' }}>{Math.round(pct)}%</span>
+          <span style={{ fontSize: 14, fontWeight: 500, color: T1 }}>We are generating your video. This may take a few minutes.</span>
+          <span style={{ fontSize: 14, fontWeight: 600, color: done ? GREEN : CYAN }}>{Math.round(pct)}%</span>
         </div>
         <div style={{ height: 5, background: S2, borderRadius: 3, overflow: 'hidden' }}>
           <div style={{
             height: '100%', width: `${pct}%`,
-            background: done ? GREEN : '#C8923A',
+            background: done ? GREEN : `linear-gradient(to right, ${CYAN}, #7B2FBE)`,
             borderRadius: 3, transition: 'width 0.6s ease',
           }} />
         </div>
@@ -672,12 +673,12 @@ function StageRendering({
         {scSt.map((status, i) => (
           <div key={i} style={{
             background: S1, borderRadius: 8,
-            border: `1px solid ${status === 'complete' ? 'rgba(30,123,52,0.30)' : BORDER}`,
+            border: `1px solid ${status === 'complete' ? 'rgba(34,197,94,0.30)' : BORDER}`,
             padding: 18, display: 'flex', flexDirection: 'column', gap: 14,
             transition: 'border-color 0.4s',
           }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: 12, fontWeight: 500, color: T1 }}>Your video</span>
+              <span style={{ fontSize: 14, fontWeight: 600, color: T1 }}>Your video</span>
               <Badge
                 text={status === 'complete' ? 'Complete' : status === 'rendering' ? 'Rendering' : 'Pending'}
                 variant={status === 'complete' ? 'success' : status === 'rendering' ? 'beige' : 'muted'}
@@ -690,16 +691,16 @@ function StageRendering({
             }}>
               {status === 'rendering' && (
                 <div style={{
-                  width: 20, height: 20, border: `2px solid #C8923A`,
+                  width: 20, height: 20, border: `2px solid ${CYAN}`,
                   borderTopColor: 'transparent', borderRadius: '50%',
                   animation: 'spin 0.75s linear infinite',
                 }} />
               )}
               {status === 'complete' && <span style={{ fontSize: 22, color: GREEN }}>✓</span>}
-              {status === 'pending'  && <span style={{ fontSize: 11, color: T2, opacity: 0.45 }}>Pending</span>}
+              {status === 'pending'  && <span style={{ fontSize: 13, color: T2, opacity: 0.45 }}>Pending</span>}
             </div>
 
-            <div style={{ fontSize: 11, color: T2 }}>
+            <div style={{ fontSize: 13, color: T2 }}>
               {status === 'complete'  && <span style={{ color: GREEN }}>Ready for review</span>}
               {status === 'rendering' && 'Generating…'}
               {status === 'pending'   && 'Waiting…'}
@@ -766,7 +767,7 @@ function StageApprove({
 
       {/* Header */}
       <div>
-        <h1 style={{ fontSize: 15, fontWeight: 700, color: T1, margin: 0 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: T1, margin: 0, letterSpacing: '-0.02em', fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif" }}>
           Video Review
         </h1>
       </div>
@@ -779,7 +780,7 @@ function StageApprove({
           flexShrink: 0, width: 220,
           background: '#000', borderRadius: 12, overflow: 'hidden',
           border: `1px solid ${BORDER}`,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
           maxHeight: 'calc(100vh - 160px)',
         }}>
           {finalUrl ? (
@@ -807,7 +808,7 @@ function StageApprove({
           <div>
             <FieldLabel>Campaign Details</FieldLabel>
             <Card style={{ background: S2 }}>
-              <p style={{ fontSize: 12, lineHeight: 1.6, color: T1, whiteSpace: 'pre-wrap', marginTop: 4 }}>
+              <p style={{ fontSize: 15, lineHeight: 1.6, color: T1, whiteSpace: 'pre-wrap', marginTop: 4 }}>
                 {brief.brief}
               </p>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 16 }}>
@@ -827,8 +828,8 @@ function StageApprove({
                   { label: 'Aspect',     value: ar(brief.platform) || '9:16' },
                   { label: 'Audio',      value: 'Voiceover included' },
                 ].map(({ label, value }) => (
-                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 12 }}>
-                    <span style={{ color: T1 }}>{label}</span>
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
+                    <span style={{ color: T2 }}>{label}</span>
                     <span style={{ color: T1, fontWeight: 500 }}>{value}</span>
                   </div>
                 ))}
@@ -840,8 +841,8 @@ function StageApprove({
             <button
               onClick={() => setShowRegen(v => !v)}
               style={{
-                padding: '8px 18px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-                background: '#FFFFFF', color: RED, border: `1px solid ${RED}`,
+                padding: '8px 18px', borderRadius: 6, fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
+                background: 'transparent', color: CYAN, border: `1px solid ${CYAN}`,
                 cursor: 'pointer', transition: 'all 0.3s', whiteSpace: 'nowrap',
               }}
             >
@@ -857,8 +858,8 @@ function StageApprove({
       {showRegen && (
         <div style={{ borderTop: `1px solid ${BORDER}`, paddingTop: 24, display: 'flex', flexDirection: 'column', gap: 16 }}>
           <div>
-            <h2 style={{ fontSize: 14, fontWeight: 600, color: T1, marginBottom: 4 }}>Regenerate with changes</h2>
-            <p style={{ fontSize: 12, color: T2 }}>Describe what you want changed — GPT will update the prompts and/or voiceover accordingly.</p>
+            <h2 style={{ fontSize: 18, fontWeight: 700, color: T1, marginBottom: 4 }}>Regenerate with changes</h2>
+            <p style={{ fontSize: 14, color: T2 }}>Describe what you want changed — GPT will update the prompts and/or voiceover accordingly.</p>
           </div>
 
           {/* Chat input */}
@@ -872,7 +873,7 @@ function StageApprove({
                 rows={2}
                 style={{
                   flex: 1, background: S2, border: `1px solid ${BORDER}`, borderRadius: 6,
-                  padding: '8px 10px', fontSize: 12, color: T1, resize: 'none',
+                  padding: '8px 10px', fontSize: 14, color: T1, resize: 'none',
                   fontFamily: 'inherit', lineHeight: 1.5, outline: 'none',
                 }}
               />
@@ -880,29 +881,30 @@ function StageApprove({
                 onClick={applyInstruction}
                 disabled={applying || !instruction.trim()}
                 style={{
-                  padding: '9px 18px', borderRadius: 6, fontSize: 12, fontWeight: 500,
-                  background: applying || !instruction.trim() ? S2 : RED,
-                  color: applying || !instruction.trim() ? T2 : '#fff',
+                  padding: '9px 18px', borderRadius: 6,
+                  background: applying || !instruction.trim() ? S2 : CYAN,
+                  color: applying || !instruction.trim() ? T2 : '#0A0A0A',
                   border: `1px solid ${BORDER}`, cursor: applying || !instruction.trim() ? 'default' : 'pointer',
+                  fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
                   whiteSpace: 'nowrap', transition: 'all 0.2s',
                 }}
               >
                 {applying ? 'Applying…' : 'Apply'}
               </button>
             </div>
-            {applyError && <p style={{ fontSize: 11, color: RED, marginTop: 6 }}>{applyError}</p>}
+            {applyError && <p style={{ fontSize: 11, color: ERR, marginTop: 6 }}>{applyError}</p>}
           </Card>
 
           {/* Updated scenes preview */}
           {updatedScenes && (
             <>
-              <div style={{ fontSize: 12, color: T2 }}>Preview of updated scenes — edit if needed, then regenerate:</div>
+              <div style={{ fontSize: 14, color: T2 }}>Preview of updated scenes — edit if needed, then regenerate:</div>
               {updatedScenes.map((scene, i) => (
                 <Card key={i}>
                   <FieldLabel>Scene {i + 1}</FieldLabel>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 8 }}>
                     <div>
-                      <div style={{ fontSize: 10, color: T2, marginBottom: 3 }}>VIDEO PROMPT</div>
+                      <div style={{ fontSize: 11, color: T2, marginBottom: 3 }}>VIDEO PROMPT</div>
                       <textarea
                         value={scene.prompt}
                         onChange={e => updateScene(i, 'prompt', e.target.value)}
@@ -910,14 +912,14 @@ function StageApprove({
                         style={{
                           width: '100%', boxSizing: 'border-box',
                           background: S2, border: `1px solid ${BORDER}`, borderRadius: 6,
-                          padding: '6px 8px', fontSize: 12, color: T1, lineHeight: 1.5,
+                          padding: '6px 8px', fontSize: 14, color: T1, lineHeight: 1.5,
                           resize: 'vertical', fontFamily: 'inherit', outline: 'none',
                         }}
                       />
                     </div>
-                    <div style={{ height: 1, background: BLIGHT }} />
+                    <div style={{ height: 1, background: BORDER }} />
                     <div>
-                      <div style={{ fontSize: 10, color: T2, marginBottom: 3 }}>VOICEOVER</div>
+                      <div style={{ fontSize: 11, color: T2, marginBottom: 3 }}>VOICEOVER</div>
                       <textarea
                         value={scene.vo}
                         onChange={e => updateScene(i, 'vo', e.target.value)}
@@ -925,7 +927,7 @@ function StageApprove({
                         style={{
                           width: '100%', boxSizing: 'border-box',
                           background: S2, border: `1px solid ${BORDER}`, borderRadius: 6,
-                          padding: '6px 8px', fontSize: 12, color: T1, lineHeight: 1.5,
+                          padding: '6px 8px', fontSize: 14, color: T1, lineHeight: 1.5,
                           resize: 'vertical', fontFamily: 'inherit', outline: 'none',
                         }}
                       />
@@ -999,7 +1001,7 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
     <div style={{ height: '100%', overflowY: 'auto', padding: '14px 36px 32px', display: 'flex', flexDirection: 'column', gap: 24 }}>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: T1 }}>Social Media Video Campaign</div>
+        <div style={{ fontSize: 28, fontWeight: 700, color: T1, letterSpacing: '-0.02em', fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif" }}>Social Media Video Campaign</div>
       </div>
 
       <div style={{ display: 'flex', gap: 32, alignItems: 'flex-start', flex: 1 }}>
@@ -1008,7 +1010,7 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
           flexShrink: 0, width: 220,
           background: '#000', borderRadius: 12, overflow: 'hidden',
           border: `1px solid ${BORDER}`,
-          boxShadow: '0 4px 24px rgba(0,0,0,0.08)',
+          boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
           maxHeight: 'calc(100vh - 160px)',
         }}>
           {finalUrl ? (
@@ -1037,8 +1039,8 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
             <Card style={{ background: S2 }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                 <div style={{ flex: 1, textAlign: 'center' }}>
-                  <div style={{ fontSize: 13, fontWeight: 500, color: T1 }}>{brief.platform || 'Instagram'}</div>
-                  <div style={{ fontSize: 10, color: T2, marginTop: 1 }}>Platform</div>
+                  <div style={{ fontSize: 16, fontWeight: 600, color: T1 }}>{brief.platform || 'Instagram'}</div>
+                  <div style={{ fontSize: 12, color: T2, marginTop: 1 }}>Platform</div>
                 </div>
                 {[
                   { k: 'Scenes',     v: String(sceneCount) },
@@ -1046,8 +1048,8 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
                   { k: 'Resolution', v: '1080p' },
                 ].map(({ k, v }) => (
                   <div key={k} style={{ flex: 1, textAlign: 'center' }}>
-                    <div style={{ fontSize: 13, fontWeight: 500, color: T1 }}>{v}</div>
-                    <div style={{ fontSize: 10, color: T2, marginTop: 1 }}>{k}</div>
+                    <div style={{ fontSize: 16, fontWeight: 600, color: T1 }}>{v}</div>
+                    <div style={{ fontSize: 12, color: T2, marginTop: 1 }}>{k}</div>
                   </div>
                 ))}
               </div>
@@ -1066,15 +1068,15 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
                   {reviewUrl ?? 'Loading…'}
                 </div>
                 <button onClick={copy} disabled={!reviewUrl} style={{
-                  padding: '9px 16px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-                  background: '#C8923A', color: '#FFFFFF', border: `1px solid #C8923A`,
+                  padding: '9px 16px', borderRadius: 6, fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
+                  background: CYAN, color: '#0A0A0A', border: `1px solid ${CYAN}`,
                   cursor: reviewUrl ? 'pointer' : 'not-allowed', transition: 'all 0.3s', whiteSpace: 'nowrap',
                   opacity: reviewUrl ? 1 : 0.5,
                 }}>
                   {copied ? 'Copied!' : 'Copy link'}
                 </button>
               </div>
-              <div style={{ fontSize: 10, color: T2, marginTop: 7 }}>Expires in 30 days · Password protected</div>
+              <div style={{ fontSize: 12, color: T2, marginTop: 7 }}>Expires in 30 days · Password protected</div>
             </Card>
           </div>
 
@@ -1087,10 +1089,10 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
                 style={{
                   display: 'flex', alignItems: 'center', gap: 8,
                   width: '100%', padding: '10px 14px', borderRadius: 6,
-                  fontSize: 12, fontWeight: 500,
-                  background: (!finalUrl || dlState === 'downloading') ? S1 : '#C8923A',
-                  color: (!finalUrl || dlState === 'downloading') ? T2 : '#FFFFFF',
-                  border: `1px solid ${(!finalUrl || dlState === 'downloading') ? BLIGHT : '#C8923A'}`,
+                  fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
+                  background: (!finalUrl || dlState === 'downloading') ? S1 : CYAN,
+                  color: (!finalUrl || dlState === 'downloading') ? T2 : '#0A0A0A',
+                  border: `1px solid ${(!finalUrl || dlState === 'downloading') ? BLIGHT : CYAN}`,
                   cursor: (!finalUrl || dlState === 'downloading') ? 'not-allowed' : 'pointer',
                   transition: 'all 0.3s',
                   opacity: (!finalUrl || dlState === 'downloading') ? 0.7 : 1,
@@ -1109,7 +1111,7 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
                 }
               </button>
               {dlState === 'error' && (
-                <div style={{ fontSize: 10, color: RED, marginTop: 7 }}>
+                <div style={{ fontSize: 12, color: ERR, marginTop: 7 }}>
                   Download failed. Please try again.{' '}
                   <span style={{ color: T2 }}>Contact support if this continues.</span>
                 </div>

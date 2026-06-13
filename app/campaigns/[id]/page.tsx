@@ -2,15 +2,16 @@
 
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
+import { AdmoLogo } from '../../components/AdmoLogo'
 
-const BG     = '#F8F7F4'
-const S1     = '#FFFFFF'
-const S2     = '#F2EFE9'
-const T1     = '#1A1A1A'
-const T2     = '#7A7672'
-const BORDER = '#E8E4DE'
-const RED    = '#B22234'
-const GOLD   = '#C8923A'
+const BG     = '#1A1A2E'
+const S1     = '#16213E'
+const S2     = '#0F1B30'
+const CYAN   = '#00D4FF'
+const T1     = '#FFFFFF'
+const T2     = '#8892A4'
+const BORDER = 'rgba(255,255,255,0.08)'
+const ERR    = '#FF6B6B'
 
 interface DbCampaign {
   id: string
@@ -79,32 +80,28 @@ export default function CampaignDetailPage() {
   }
 
   return (
-    <div style={{ background: BG, minHeight: '100vh', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: T1 }}>
+    <div style={{ background: BG, height: '100%', overflowY: 'auto', fontFamily: "'Inter', system-ui, -apple-system, sans-serif", color: T1 }}>
       <header style={{
-        height: 56, background: RED,
+        height: 56, background: '#0A0A0A', borderBottom: `3px solid #F5A623`,
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         padding: '0 24px', position: 'sticky', top: 0, zIndex: 10,
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontFamily: 'Georgia, serif', fontSize: 15, fontWeight: 400, color: '#FFFFFF', letterSpacing: '0.07em' }}>ADMO</span>
-          <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 13 }}>|</span>
-          <span style={{ fontSize: 13, fontWeight: 500, color: '#FFFFFF' }}>Video Studio</span>
-        </div>
+        <AdmoLogo />
         <div style={{ display: 'flex', gap: 4 }}>
           <button
             onClick={() => router.push('/')}
-            style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500, background: 'transparent', color: 'rgba(255,255,255,0.75)', border: '1px solid transparent', cursor: 'pointer' }}
+            style={{ padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500, background: 'transparent', color: T2, border: '1px solid transparent', cursor: 'pointer' }}
           >
             Creation Canvas
           </button>
           <button
             onClick={() => router.push('/campaigns')}
-            style={{ padding: '5px 14px', borderRadius: 6, fontSize: 12, fontWeight: 500, background: 'rgba(255,255,255,0.15)', color: '#FFFFFF', border: '1px solid rgba(255,255,255,0.35)', cursor: 'pointer' }}
+            style={{ padding: '5px 14px', borderRadius: 6, fontSize: 14, fontWeight: 500, background: 'transparent', color: '#F5A623', border: `1px solid #F5A623`, cursor: 'pointer' }}
           >
             My Campaigns
           </button>
         </div>
-        <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#2D2D2D', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#FFFFFF' }}>
+        <div style={{ width: 30, height: 30, borderRadius: '50%', background: '#2D3748', border: '1px solid #F5A623', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, fontWeight: 700, color: '#FFFFFF' }}>
           M
         </div>
       </header>
@@ -129,7 +126,7 @@ export default function CampaignDetailPage() {
               flexShrink: 0, width: 320,
               background: '#000', borderRadius: 12, overflow: 'hidden',
               border: `1px solid ${BORDER}`,
-              boxShadow: '0 4px 24px rgba(0,0,0,0.10)',
+              boxShadow: '0 4px 24px rgba(0,0,0,0.3)',
             }}>
               {campaign.final_url ? (
                 <video
@@ -151,10 +148,10 @@ export default function CampaignDetailPage() {
             {/* Details panel */}
             <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 24 }}>
               <div>
-                <h1 style={{ fontFamily: 'Georgia, serif', fontSize: 22, fontWeight: 400, color: T1, marginBottom: 4 }}>
+                <h1 style={{ fontFamily: "var(--font-space-grotesk), 'Space Grotesk', sans-serif", fontSize: 28, fontWeight: 700, color: T1, marginBottom: 4, letterSpacing: '-0.02em' }}>
                   Video Campaign
                 </h1>
-                <div style={{ fontSize: 12, color: T2, fontFamily: '"Roboto Mono", monospace' }}>{campaign.id}</div>
+                <div style={{ fontSize: 11, color: '#4A5568', fontFamily: '"Roboto Mono", monospace' }}>{campaign.id}</div>
               </div>
 
               {/* Meta */}
@@ -165,7 +162,7 @@ export default function CampaignDetailPage() {
                   { label: 'Completed',  value: formatDate(campaign.completed_at) },
                   { label: 'Format',     value: 'MP4' },
                 ].map(({ label, value }) => (
-                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13 }}>
+                  <div key={label} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 14 }}>
                     <span style={{ color: T2 }}>{label}</span>
                     <span style={{ color: T1, fontWeight: 500 }}>{value}</span>
                   </div>
@@ -175,7 +172,7 @@ export default function CampaignDetailPage() {
               {/* Video URL */}
               {campaign.final_url && (
                 <div style={{ background: S1, border: `1px solid ${BORDER}`, borderRadius: 8, padding: '16px 20px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-                  <div style={{ fontSize: 10, fontWeight: 500, color: T2, textTransform: 'uppercase', letterSpacing: '0.09em' }}>Video Link</div>
+                  <div style={{ fontSize: 10, fontWeight: 500, color: T2, textTransform: 'uppercase', letterSpacing: '0.1em' }}>Video Link</div>
                   <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                     <div style={{
                       flex: 1, background: S2, border: `1px solid ${BORDER}`, borderRadius: 6,
@@ -187,7 +184,8 @@ export default function CampaignDetailPage() {
                     </div>
                     <button onClick={copyLink} style={{
                       padding: '8px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
-                      background: GOLD, color: '#FFFFFF', border: 'none',
+                      background: CYAN, color: '#0A0A0A', border: 'none',
+                      fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
                       cursor: 'pointer', whiteSpace: 'nowrap',
                     }}>
                       {copied ? 'Copied!' : 'Copy'}
@@ -202,9 +200,9 @@ export default function CampaignDetailPage() {
                 disabled={!campaign.final_url || dlState === 'downloading'}
                 style={{
                   display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
-                  padding: '12px 20px', borderRadius: 8, fontSize: 13, fontWeight: 500,
-                  background: (!campaign.final_url || dlState === 'downloading') ? S2 : GOLD,
-                  color: (!campaign.final_url || dlState === 'downloading') ? T2 : '#FFFFFF',
+                  padding: '12px 20px', borderRadius: 8, fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
+                  background: (!campaign.final_url || dlState === 'downloading') ? S2 : CYAN,
+                  color: (!campaign.final_url || dlState === 'downloading') ? T2 : '#0A0A0A',
                   border: 'none', cursor: (!campaign.final_url || dlState === 'downloading') ? 'not-allowed' : 'pointer',
                   transition: 'all 0.2s',
                 }}
@@ -217,7 +215,7 @@ export default function CampaignDetailPage() {
                 {dlState === 'downloading' ? 'Downloading…' : 'Download MP4'}
               </button>
               {dlState === 'error' && (
-                <div style={{ fontSize: 11, color: RED }}>Download failed. Please try again.</div>
+                <div style={{ fontSize: 11, color: ERR }}>Download failed. Please try again.</div>
               )}
             </div>
           </div>
