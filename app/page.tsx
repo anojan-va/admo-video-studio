@@ -803,7 +803,7 @@ function StageApprove({
         </div>
 
         {/* Right panel: metadata + approve */}
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
 
           <div>
             <FieldLabel>Campaign Details</FieldLabel>
@@ -1032,7 +1032,7 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
           )}
         </div>
 
-        <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
+        <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 20, paddingTop: 4 }}>
 
           <div>
             <FieldLabel>Campaign Summary</FieldLabel>
@@ -1061,9 +1061,10 @@ function StageExport({ brief, sceneCount, videoUrls, campaignId, reset }: { brie
             <Card style={{ background: S2 }}>
               <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
                 <div style={{
-                  flex: 1, background: S1, border: `1px solid ${BLIGHT}`,
+                  flex: 1, minWidth: 0, background: S1, border: `1px solid ${BLIGHT}`,
                   borderRadius: 6, padding: '9px 12px', fontSize: 12, color: T2,
                   fontFamily: '"Roboto Mono", "Courier New", monospace',
+                  overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
                 }}>
                   {reviewUrl ?? 'Loading…'}
                 </div>

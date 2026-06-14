@@ -183,9 +183,8 @@ export default function CampaignDetailPage() {
                       {campaign.final_url}
                     </div>
                     <button onClick={copyLink} style={{
-                      padding: '8px 14px', borderRadius: 6, fontSize: 11, fontWeight: 500,
+                      padding: '8px 14px', borderRadius: 6, fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
                       background: CYAN, color: '#0A0A0A', border: 'none',
-                      fontSize: 14, fontWeight: 600, letterSpacing: '0.01em',
                       cursor: 'pointer', whiteSpace: 'nowrap',
                     }}>
                       {copied ? 'Copied!' : 'Copy'}
